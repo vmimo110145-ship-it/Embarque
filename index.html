@@ -2,74 +2,72 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes"/>
 <title>Viação MIMO — Gestão de Embarque</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css"/>
 <style>
 :root{--red:#C0392B;--red-dark:#96281B;--red-light:#fdedec;--green:#1e8449;--green-light:#eafaf1;--blue:#1a56db;--blue-light:#ebf5ff;--gray-50:#f9fafb;--gray-100:#f3f4f6;--gray-200:#e5e7eb;--gray-400:#9ca3af;--gray-500:#6b7280;--gray-900:#111827;--radius-sm:6px;--radius-md:10px;--radius-lg:14px;}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f2f5;color:var(--gray-900);}
-#login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a1a1a 0%,#2d1010 100%);}
-.login-card{background:#fff;border-radius:var(--radius-lg);padding:36px 32px;width:100%;max-width:420px;box-shadow:0 8px 32px rgba(0,0,0,0.18);}
+#login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a1a1a 0%,#2d1010 100%);padding:16px;}
+.login-card{background:#fff;border-radius:var(--radius-lg);padding:28px 24px;width:100%;max-width:400px;box-shadow:0 8px 32px rgba(0,0,0,0.18);}
 .logo-text{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:24px;}
 .logo-text i{font-size:42px;color:var(--red);}
-.logo-text span{font-size:28px;font-weight:700;background:linear-gradient(135deg,#C0392B,#E74C3C);-webkit-background-clip:text;background-clip:text;color:transparent;}
+.logo-text span{font-size:26px;font-weight:700;background:linear-gradient(135deg,#C0392B,#E74C3C);-webkit-background-clip:text;background-clip:text;color:transparent;}
 .topbar-logo{display:flex;align-items:center;gap:8px;background:transparent;}
-.topbar-logo i{font-size:24px;color:var(--red);}
-.topbar-logo span{font-size:16px;font-weight:600;color:#fff;}
-.role-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px;}
-.role-btn{padding:12px 6px;border-radius:var(--radius-md);border:1.5px solid var(--gray-200);background:var(--gray-50);cursor:pointer;text-align:center;}
+.topbar-logo i{font-size:22px;color:var(--red);}
+.topbar-logo span{font-size:14px;font-weight:600;color:#fff;}
+.role-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:10px;margin-bottom:24px;}
+.role-btn{padding:10px 4px;border-radius:var(--radius-md);border:1.5px solid var(--gray-200);background:var(--gray-50);cursor:pointer;text-align:center;}
 .role-btn.selected{border-color:var(--red);background:var(--red-light);}
-.role-btn i{font-size:24px;display:block;margin-bottom:4px;}
+.role-btn i{font-size:20px;display:block;margin-bottom:4px;}
 .login-field{margin-bottom:14px;}
-.login-field input{width:100%;padding:10px;border:1px solid var(--gray-200);border-radius:var(--radius-sm);}
-.btn-login{width:100%;padding:11px;background:var(--red);color:#fff;border:none;border-radius:var(--radius-sm);cursor:pointer;font-weight:600;}
+.login-field input{width:100%;padding:12px;font-size:16px;border:1px solid var(--gray-200);border-radius:var(--radius-sm);}
+.btn-login{width:100%;padding:12px;background:var(--red);color:#fff;border:none;border-radius:var(--radius-sm);cursor:pointer;font-weight:600;font-size:16px;}
 .btn-secondary{background:#6c757d;margin-top:8px;}
-.topbar{background:#1a1a1a;padding:0 20px;height:56px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:50;}
-.topbar-title{font-size:13px;color:rgba(255,255,255,0.85);flex:1;}
-.role-badge{font-size:11px;padding:4px 10px;border-radius:20px;}
+.topbar{background:#1a1a1a;padding:0 16px;height:56px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;}
+.topbar-title{font-size:13px;color:rgba(255,255,255,0.85);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.role-badge{font-size:11px;padding:4px 8px;border-radius:20px;white-space:nowrap;}
 .role-admin{background:rgba(192,57,43,0.25);color:#f1948a;}
 .role-lider{background:rgba(26,86,219,0.25);color:#93c5fd;}
 .role-motorista{background:rgba(30,132,67,0.25);color:#82e0aa;}
-.btn-logout{background:rgba(255,255,255,0.08);border:none;color:#fff;padding:6px 12px;border-radius:6px;cursor:pointer;}
-.main{max-width:1200px;margin:0 auto;padding:24px 16px;}
-.card{background:#fff;border-radius:var(--radius-lg);padding:20px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,0.08);}
-.hero{position:relative;height:140px;background:#2c3e50;border-radius:var(--radius-lg);margin-bottom:20px;overflow:hidden;}
-.hero-overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,0.7),transparent);display:flex;align-items:center;padding:0 24px;}
-.hero-text p:first-child{font-size:18px;font-weight:600;color:#fff;}
-.badge{font-size:11px;padding:3px 9px;border-radius:20px;display:inline-flex;align-items:center;gap:4px;}
+.btn-logout{background:rgba(255,255,255,0.08);border:none;color:#fff;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;}
+.main{max-width:800px;margin:0 auto;padding:16px;}
+.card{background:#fff;border-radius:var(--radius-lg);padding:16px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,0.08);}
+.hero{position:relative;height:120px;background:#2c3e50;border-radius:var(--radius-lg);margin-bottom:16px;overflow:hidden;}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,0.7),transparent);display:flex;align-items:center;padding:0 20px;}
+.hero-text p:first-child{font-size:16px;font-weight:600;color:#fff;}
+.badge{font-size:10px;padding:2px 8px;border-radius:20px;display:inline-flex;align-items:center;gap:4px;}
 .badge-green{background:var(--green-light);color:var(--green);}
 .badge-red{background:var(--red-light);color:var(--red);}
 .badge-yellow{background:#fef9e7;color:#7d6608;}
-.btn{padding:8px 16px;border-radius:var(--radius-sm);border:1px solid var(--gray-200);cursor:pointer;background:transparent;}
+.btn{padding:6px 12px;border-radius:var(--radius-sm);border:1px solid var(--gray-200);cursor:pointer;background:transparent;font-size:12px;}
 .btn-primary{background:var(--red);color:#fff;border-color:var(--red);}
 .btn-success{background:var(--green);color:#fff;}
-.btn-sm{padding:4px 10px;font-size:12px;}
+.btn-sm{padding:4px 8px;font-size:11px;}
 .search-wrap{position:relative;margin-bottom:16px;}
-.search-wrap input{width:100%;padding:9px 12px 9px 36px;border:1px solid var(--gray-200);border-radius:var(--radius-sm);}
+.search-wrap input{width:100%;padding:10px 12px 10px 36px;font-size:14px;border:1px solid var(--gray-200);border-radius:var(--radius-sm);}
 .search-wrap i{position:absolute;left:12px;top:50%;transform:translateY(-50%);}
-.pass-card{background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius-md);padding:12px;margin-bottom:8px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
-.avatar{width:42px;height:42px;border-radius:50%;background:var(--red-light);display:flex;align-items:center;justify-content:center;font-weight:600;color:var(--red);}
-.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;align-items:center;justify-content:center;}
+.pass-card{background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius-md);padding:12px;margin-bottom:8px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.avatar{width:40px;height:40px;border-radius:50%;background:var(--red-light);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:14px;color:var(--red);flex-shrink:0;}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;align-items:center;justify-content:center;padding:16px;}
 .overlay.open{display:flex;}
-.modal{background:#fff;border-radius:var(--radius-lg);width:100%;max-width:700px;}
-.modal-header{padding:16px 20px;border-bottom:1px solid var(--gray-200);}
-.modal-body{padding:20px;max-height:70vh;overflow-y:auto;}
-.modal-footer{padding:12px 20px;display:flex;gap:8px;justify-content:flex-end;}
-.tabs{display:flex;gap:6px;margin-bottom:16px;background:var(--gray-100);padding:4px;border-radius:var(--radius-md);}
-.tab-btn{flex:1;padding:8px;border:none;background:transparent;border-radius:var(--radius-sm);cursor:pointer;}
+.modal{background:#fff;border-radius:var(--radius-lg);width:100%;max-width:500px;max-height:90vh;overflow-y:auto;}
+.modal-header{padding:14px 16px;border-bottom:1px solid var(--gray-200);}
+.modal-body{padding:16px;}
+.modal-footer{padding:12px 16px;display:flex;gap:8px;justify-content:flex-end;}
+.tabs{display:flex;gap:6px;margin-bottom:16px;background:var(--gray-100);padding:4px;border-radius:var(--radius-md);flex-wrap:wrap;}
+.tab-btn{flex:1;padding:8px;font-size:12px;border:none;background:transparent;border-radius:var(--radius-sm);cursor:pointer;}
 .tab-btn.active{background:#fff;box-shadow:0 1px 2px rgba(0,0,0,0.05);}
-.form-group{margin-bottom:16px;}
-.form-group label{display:block;font-size:12px;margin-bottom:4px;color:var(--gray-500);}
-.form-group input{width:100%;padding:8px 12px;border:1px solid var(--gray-200);border-radius:var(--radius-sm);}
-.status-bar{display:none;padding:10px;border-radius:var(--radius-sm);margin-bottom:16px;}
+.form-group{margin-bottom:14px;}
+.form-group label{font-size:12px;margin-bottom:4px;display:block;color:var(--gray-500);}
+.form-group input{width:100%;padding:10px;font-size:14px;border:1px solid var(--gray-200);border-radius:var(--radius-sm);}
+.status-bar{display:none;padding:10px;border-radius:var(--radius-sm);margin-bottom:16px;font-size:13px;}
 .status-success{background:var(--green-light);color:var(--green);}
 .status-error{background:var(--red-light);color:var(--red);}
-.drop-zone{border:2px dashed var(--gray-400);padding:40px;text-align:center;cursor:pointer;border-radius:var(--radius-md);margin-bottom:16px;transition:all 0.2s;}
-.drop-zone:hover{border-color:var(--red);background:var(--red-light);}
-.reset-btn{background:#dc3545;color:white;border:none;margin-top:10px;width:100%;}
-.suggestions{background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius-sm);max-height:200px;overflow-y:auto;margin-top:5px;position:absolute;z-index:100;width:calc(100% - 40px);}
-.sug-item{padding:9px 14px;cursor:pointer;border-bottom:1px solid var(--gray-100);}
+.drop-zone{border:2px dashed var(--gray-400);padding:30px 16px;text-align:center;cursor:pointer;border-radius:var(--radius-md);margin-bottom:16px;font-size:13px;}
+.suggestions{background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius-sm);max-height:200px;overflow-y:auto;margin-top:5px;position:absolute;z-index:100;width:calc(100% - 32px);}
+.sug-item{padding:8px 12px;cursor:pointer;border-bottom:1px solid var(--gray-100);font-size:13px;}
 .sug-item:hover{background:var(--gray-50);}
 </style>
 </head>
@@ -108,24 +106,24 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <!-- Admin Panel -->
     <div id="admin-panel" style="display:none">
       <div class="tabs">
-        <button class="tab-btn active" onclick="adminTab('solicitacoesLider')">Solicitações Líder</button>
-        <button class="tab-btn" onclick="adminTab('solicitacoesColab')">Solicitações Embarque</button>
-        <button class="tab-btn" onclick="adminTab('lideres')">Líderes Aprovados</button>
-        <button class="tab-btn" onclick="adminTab('upload')">Upload Planilha</button>
+        <button class="tab-btn active" onclick="adminTab('solicitacoesLider')">Solic. Líder</button>
+        <button class="tab-btn" onclick="adminTab('solicitacoesColab')">Solic. Embarque</button>
+        <button class="tab-btn" onclick="adminTab('lideres')">Líderes</button>
+        <button class="tab-btn" onclick="adminTab('upload')">Upload</button>
         <button class="tab-btn" onclick="adminTab('colaboradoresList')">Colaboradores</button>
       </div>
       <div id="admin-solicitacoesLider" class="card"><h3>Cadastros de Líder Aguardando Aprovação</h3><div id="solicitacoes-lider-list"></div></div>
       <div id="admin-solicitacoesColab" style="display:none" class="card"><h3>Solicitações de Embarque</h3><div id="solicitacoes-colab-list"></div></div>
       <div id="admin-lideres" style="display:none" class="card"><h3>Líderes Autorizados</h3><div id="lideres-list"></div></div>
       <div id="admin-upload" style="display:none" class="card">
-        <h3>Upload de Lista de Passageiros e Linhas</h3>
-        <div class="drop-zone" id="dropZone" onclick="document.getElementById('file-input').click()">📁 Arraste ou clique para enviar arquivo Excel (.xlsx ou .xls)<br><small>Abas esperadas: <strong>PASSAGEIROS</strong> e <strong>LINHAS</strong></small></div>
+        <h3>Upload de Planilha</h3>
+        <div class="drop-zone" id="dropZone" onclick="document.getElementById('file-input').click()">📁 Arraste ou clique<br><small>Abas: PASSAGEIROS e LINHAS</small></div>
         <input type="file" id="file-input" accept=".xlsx,.xls" style="display:none" onchange="handleFile(this.files[0])">
         <div id="upload-status" class="status-bar" style="display:none"></div>
       </div>
       <div id="admin-colaboradoresList" style="display:none" class="card">
         <h3>Colaboradores Cadastrados</h3>
-        <div class="search-wrap"><i class="ti ti-search"></i><input type="text" id="admin-colab-search" placeholder="Buscar colaborador..." oninput="renderAdminColaboradores()"></div>
+        <div class="search-wrap"><i class="ti ti-search"></i><input type="text" id="admin-colab-search" placeholder="Buscar..." oninput="renderAdminColaboradores()"></div>
         <div id="admin-colaboradores-container"></div>
       </div>
     </div>
@@ -134,13 +132,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div id="lider-panel" style="display:none">
       <div class="tabs"><button class="tab-btn active" onclick="liderTab('colaboradores')">Colaboradores</button><button class="tab-btn" onclick="liderTab('solicitacoes')">Minhas Solicitações</button></div>
       <div id="lider-colaboradores"><div class="search-wrap"><i class="ti ti-search"></i><input type="text" id="lider-search" placeholder="Buscar colaborador" oninput="renderColaboradores()"></div><div id="colaboradores-list"></div></div>
-      <div id="lider-solicitacoes" style="display:none" class="card"><h3>Solicitações de Embarque Enviadas</h3><div id="lider-solicitacoes-list"></div></div>
+      <div id="lider-solicitacoes" style="display:none" class="card"><h3>Solicitações Enviadas</h3><div id="lider-solicitacoes-list"></div></div>
     </div>
     
     <!-- Motorista Panel -->
     <div id="motorista-panel" style="display:none">
       <div class="card">
-        <h3>Consulta de Colaboradores com Embarque Liberado</h3>
+        <h3>Colaboradores Autorizados</h3>
         <div class="search-wrap"><i class="ti ti-search"></i><input type="text" id="motorista-search" placeholder="Buscar por nome" oninput="buscarColaboradorMotorista()"></div>
         <div id="motorista-resultado"></div>
       </div>
@@ -148,23 +146,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
 </div>
 
-<!-- Modal Solicitar Liberação (Líder) -->
+<!-- Modal Solicitar Liberação -->
 <div id="solicitar-liberacao-modal" class="overlay">
   <div class="modal">
-    <div class="modal-header"><h3>Solicitar Liberação de Embarque</h3></div>
+    <div class="modal-header"><h3>Solicitar Liberação</h3></div>
     <div class="modal-body">
-      <div class="form-group"><label>Colaborador</label><input type="text" id="sol-colab-nome" readonly style="background:#f0f0f0"></div>
-      <div class="form-group"><label>Linha Atual</label><input type="text" id="sol-linha-atual" readonly style="background:#f0f0f0"></div>
-      <div class="form-group"><label>Telefone para Contato</label><input type="text" id="sol-telefone" readonly style="background:#f0f0f0"></div>
+      <div class="form-group"><label>Colaborador</label><input type="text" id="sol-colab-nome" readonly></div>
+      <div class="form-group"><label>Linha Atual</label><input type="text" id="sol-linha-atual" readonly></div>
+      <div class="form-group"><label>Telefone</label><input type="text" id="sol-telefone" readonly></div>
       <div class="form-group" style="position:relative">
-        <label>Selecione a Linha Desejada para Embarque</label>
-        <input type="text" id="sol-busca-linha" placeholder="Digite para buscar linha..." autocomplete="off">
-        <div id="sol-linha-suggestions" class="suggestions" style="display:none"></div>
+        <label>Linha Desejada</label>
+        <input type="text" id="sol-busca-linha" placeholder="Digite para buscar...">
+        <div id="sol-linha-suggestions" class="suggestions"></div>
       </div>
       <div id="sol-linha-selecionada" style="display:none; margin-top:8px; padding:8px; background:var(--green-light); border-radius:6px;"><i class="ti ti-circle-check"></i> <span id="sol-linha-nome"></span></div>
-      <div id="sol-msg" class="status-bar" style="display:none"></div>
+      <div id="sol-msg" class="status-bar"></div>
     </div>
-    <div class="modal-footer"><button class="btn" onclick="closeSolicitarModal()">Cancelar</button><button class="btn btn-primary" onclick="enviarSolicitacaoEmbarque()">Enviar Solicitação</button></div>
+    <div class="modal-footer"><button class="btn" onclick="closeSolicitarModal()">Cancelar</button><button class="btn btn-primary" onclick="enviarSolicitacaoEmbarque()">Enviar</button></div>
   </div>
 </div>
 
@@ -173,12 +171,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div class="modal">
     <div class="modal-header"><h3>Cadastro de Líder</h3></div>
     <div class="modal-body">
-      <div class="form-group"><label>E-mail (somente @mercadolivre.com)</label><input type="email" id="reg-email" placeholder="seuemail@mercadolivre.com"></div>
+      <div class="form-group"><label>E-mail (@mercadolivre.com)</label><input type="email" id="reg-email" placeholder="seuemail@mercadolivre.com"></div>
       <div class="form-group"><label>Senha</label><input type="password" id="reg-senha"></div>
-      <div class="form-group"><label>Confirmar senha</label><input type="password" id="reg-confirm"></div>
-      <div id="reg-msg" class="status-bar" style="display:none"></div>
+      <div class="form-group"><label>Confirmar</label><input type="password" id="reg-confirm"></div>
+      <div id="reg-msg" class="status-bar"></div>
     </div>
-    <div class="modal-footer"><button class="btn" onclick="closeRegisterModal()">Cancelar</button><button class="btn btn-primary" onclick="solicitarCadastroLider()">Solicitar Cadastro</button></div>
+    <div class="modal-footer"><button class="btn" onclick="closeRegisterModal()">Cancelar</button><button class="btn btn-primary" onclick="solicitarCadastroLider()">Solicitar</button></div>
   </div>
 </div>
 
@@ -204,9 +202,7 @@ function initData() {
   if(!localStorage.getItem('mimo_lider_requests')) localStorage.setItem('mimo_lider_requests', JSON.stringify([]));
   if(!localStorage.getItem('mimo_solicitacoes_embarque')) localStorage.setItem('mimo_solicitacoes_embarque', JSON.stringify([]));
   if(!localStorage.getItem('mimo_linhas')) localStorage.setItem('mimo_linhas', JSON.stringify([]));
-  if(!localStorage.getItem('mimo_colaboradores')) {
-    localStorage.setItem('mimo_colaboradores', JSON.stringify([]));
-  }
+  if(!localStorage.getItem('mimo_colaboradores')) localStorage.setItem('mimo_colaboradores', JSON.stringify([]));
   let usersNow = JSON.parse(localStorage.getItem('mimo_users'));
   if(!usersNow['lider@mercadolivre.com']) {
     usersNow['lider@mercadolivre.com'] = { password: 'lider123', role: 'lider', nome: 'Líder Exemplo', status: 'aprovado' };
@@ -215,7 +211,6 @@ function initData() {
 }
 initData();
 
-// ==================== VARIÁVEIS GLOBAIS ====================
 let users = JSON.parse(localStorage.getItem('mimo_users'));
 let liderRequests = JSON.parse(localStorage.getItem('mimo_lider_requests'));
 let colaboradores = JSON.parse(localStorage.getItem('mimo_colaboradores'));
@@ -224,7 +219,6 @@ let solicitacoesEmbarque = JSON.parse(localStorage.getItem('mimo_solicitacoes_em
 let currentUser = null;
 let currentSolicitacaoColab = null;
 
-// ==================== FUNÇÕES DE LOGIN / UI ====================
 function selectRole(role) {
   document.querySelectorAll('.role-btn').forEach(btn => btn.classList.remove('selected'));
   event.currentTarget.classList.add('selected');
@@ -241,14 +235,14 @@ function solicitarCadastroLider() {
   let senha = document.getElementById('reg-senha').value;
   let confirm = document.getElementById('reg-confirm').value;
   let msgDiv = document.getElementById('reg-msg');
-  if (!email.endsWith('@mercadolivre.com')) { showMsg(msgDiv, 'O e-mail deve ser @mercadolivre.com', 'error'); return; }
-  if (senha.length < 4) { showMsg(msgDiv, 'Senha deve ter no mínimo 4 caracteres', 'error'); return; }
+  if (!email.endsWith('@mercadolivre.com')) { showMsg(msgDiv, 'E-mail deve ser @mercadolivre.com', 'error'); return; }
+  if (senha.length < 4) { showMsg(msgDiv, 'Senha mínima 4 caracteres', 'error'); return; }
   if (senha !== confirm) { showMsg(msgDiv, 'Senhas não coincidem', 'error'); return; }
   if (users[email] || liderRequests.some(r => r.email === email)) { showMsg(msgDiv, 'E-mail já cadastrado ou pendente', 'error'); return; }
   liderRequests.push({ email, senha, nome: email.split('@')[0], status: 'pendente' });
   localStorage.setItem('mimo_lider_requests', JSON.stringify(liderRequests));
   showMsg(msgDiv, 'Solicitação enviada ao administrador.', 'success');
-  setTimeout(() => { closeRegisterModal(); }, 2000);
+  setTimeout(() => closeRegisterModal(), 2000);
 }
 
 function showMsg(el, text, type) { el.className = `status-bar status-${type}`; el.style.display = 'block'; el.innerHTML = text; setTimeout(() => el.style.display = 'none', 3000); }
@@ -265,11 +259,7 @@ function doLogin() {
     return;
   }
   let pending = liderRequests.find(r => r.email === username && r.status === 'pendente');
-  if (pending && pending.senha === password) {
-    document.getElementById('login-err').innerHTML = 'Aguardando aprovação do administrador.';
-  } else {
-    document.getElementById('login-err').innerHTML = 'Usuário ou senha inválidos.';
-  }
+  document.getElementById('login-err').innerHTML = pending ? 'Aguardando aprovação do administrador.' : 'Usuário ou senha inválidos.';
   document.getElementById('login-err').style.display = 'block';
 }
 
@@ -280,7 +270,7 @@ function setupDashboard() {
   document.getElementById('topbar-role-badge').innerHTML = role === 'admin' ? 'Admin' : (role === 'lider' ? 'Líder' : 'Motorista');
   document.getElementById('topbar-role-badge').className = `role-badge role-${role}`;
   document.getElementById('hero-title').innerText = role === 'admin' ? 'Painel Administrativo' : (role === 'lider' ? 'Gestão de Equipe' : 'Consulta de Embarque');
-  document.getElementById('hero-sub').innerText = role === 'admin' ? 'Gerencie solicitações e colaboradores' : (role === 'lider' ? 'Solicite embarque para colaboradores' : 'Busque colaboradores autorizados');
+  document.getElementById('hero-sub').innerText = role === 'admin' ? 'Gerencie solicitações e colaboradores' : (role === 'lider' ? 'Solicite embarque' : 'Busque colaboradores autorizados');
   document.getElementById('admin-panel').style.display = role === 'admin' ? 'block' : 'none';
   document.getElementById('lider-panel').style.display = role === 'lider' ? 'block' : 'none';
   document.getElementById('motorista-panel').style.display = role === 'motorista' ? 'block' : 'none';
@@ -344,7 +334,7 @@ function renderSolicitacoesEmbarque() {
   pending.forEach(s => {
     let colab = colaboradores.find(c => c.id === s.colaboradorId);
     html += `<div class="card" style="margin-bottom:8px">
-      <div><strong>${colab ? colab.nome : 'Colaborador'}</strong> - Telefone: ${colab ? colab.telefone : '—'}</div>
+      <div><strong>${colab ? colab.nome : 'Colaborador'}</strong> - Tel: ${colab ? colab.telefone : '—'}</div>
       <div>Linha atual: ${colab ? colab.linha : '—'}</div>
       <div>Linha solicitada: ${s.linhaSolicitada}</div>
       <div>Solicitante: ${s.liderId}</div>
@@ -359,15 +349,13 @@ function aprovarEmbarque(id) {
   if (sol) {
     sol.status = 'aprovado';
     let colab = colaboradores.find(c => c.id === sol.colaboradorId);
-    if (colab) {
-      colab.autorizado = true;
-      localStorage.setItem('mimo_colaboradores', JSON.stringify(colaboradores));
-    }
+    if (colab) colab.autorizado = true;
+    localStorage.setItem('mimo_colaboradores', JSON.stringify(colaboradores));
     localStorage.setItem('mimo_solicitacoes_embarque', JSON.stringify(solicitacoesEmbarque));
     renderSolicitacoesEmbarque();
     renderAdminColaboradores();
-    if (currentUser && currentUser.role === 'lider') renderColaboradores();
-    alert('Embarque autorizado com sucesso!');
+    if (currentUser?.role === 'lider') renderColaboradores();
+    alert('Embarque autorizado!');
   }
 }
 function reprovarEmbarque(id) {
@@ -380,7 +368,7 @@ function reprovarEmbarque(id) {
   }
 }
 
-// ==================== UPLOAD DE PLANILHA (MAPEAMENTO ROBUSTO) ====================
+// ==================== UPLOAD (CORRIGIDO PARA MOBILE) ====================
 function handleFile(file) {
   if (!file) return;
   let statusDiv = document.getElementById('upload-status');
@@ -394,122 +382,80 @@ function handleFile(file) {
       let data = new Uint8Array(e.target.result);
       let workbook = XLSX.read(data, { type: 'array' });
       
-      let passageirosSheet = null;
-      let linhasSheet = null;
-      
-      // Procura as abas
-      for (let sheetName of workbook.SheetNames) {
-        let upper = sheetName.toUpperCase();
-        if (upper === 'PASSAGEIROS') passageirosSheet = workbook.Sheets[sheetName];
-        if (upper === 'LINHAS') linhasSheet = workbook.Sheets[sheetName];
+      let passageirosSheet = null, linhasSheet = null;
+      for (let name of workbook.SheetNames) {
+        let upper = name.toUpperCase();
+        if (upper === 'PASSAGEIROS') passageirosSheet = workbook.Sheets[name];
+        if (upper === 'LINHAS') linhasSheet = workbook.Sheets[name];
       }
       if (!passageirosSheet) passageirosSheet = workbook.Sheets[workbook.SheetNames[0]];
       
       let rows = XLSX.utils.sheet_to_json(passageirosSheet, { defval: '', raw: false });
-      if (!rows || rows.length === 0) throw new Error('Nenhum dado encontrado.');
+      if (!rows.length) throw new Error('Nenhum dado encontrado.');
       
-      // DEBUG: Mostra cabeçalhos
+      // Mostrar cabeçalhos para debug
       let headers = Object.keys(rows[0]);
-      console.log('Cabeçalhos encontrados:', headers);
-      alert('Cabeçalhos detectados:\n' + headers.join('\n'));
+      console.log('Cabeçalhos:', headers);
+      alert('Cabeçalhos detectados:\n' + headers.join(', '));
       
-      // Função flexível para extrair valor
       function getField(row, variations) {
         for (let v of variations) {
-          if (row.hasOwnProperty(v) && row[v] !== undefined && row[v] !== null && row[v].toString().trim() !== '') {
-            return row[v].toString().trim();
-          }
+          if (row[v] && row[v].toString().trim()) return row[v].toString().trim();
         }
-        // Caso não encontre, busca em qualquer chave que contenha a variação (case-insensitive)
+        // Busca case-insensitive
         for (let key of Object.keys(row)) {
           for (let v of variations) {
-            if (key.toLowerCase() === v.toLowerCase()) {
-              let val = row[key];
-              if (val !== undefined && val !== null && val.toString().trim() !== '') {
-                return val.toString().trim();
-              }
+            if (key.toLowerCase() === v.toLowerCase() && row[key] && row[key].toString().trim()) {
+              return row[key].toString().trim();
             }
           }
         }
         return '';
       }
       
-      let novosColaboradores = [];
-      let linhasExtraidas = new Set();
-      
+      let novos = [], linhasExtraidas = new Set();
       for (let row of rows) {
         let nome = getField(row, ['Nome', 'NOME', 'nome']);
         if (!nome) continue;
-        
-        // Mapeamento específico para "Linha Vinculada" (espaço e acento)
-        let linha = getField(row, [
-          'Linha Vinculada', 'LINHA VINCULADA', 'linha vinculada',
-          'Linha', 'LINHA', 'linha',
-          'LinhaVinculada', 'linhaVinculada'
-        ]);
-        
+        let linha = getField(row, ['Linha Vinculada', 'LINHA VINCULADA', 'linha vinculada', 'Linha', 'LINHA', 'linha']);
         let turno = getField(row, ['Turno', 'TURNO', 'turno']);
-        let email = getField(row, ['E-mail', 'EMAIL', 'email', 'Email']);
-        let celular = getField(row, ['Celular', 'CELULAR', 'celular', 'Telefone', 'TELEFONE']);
+        let email = getField(row, ['E-mail', 'EMAIL', 'email']);
+        let celular = getField(row, ['Celular', 'CELULAR', 'celular', 'Telefone']);
         let cpf = getField(row, ['Cpf', 'CPF', 'cpf']);
-        let horaParada = getField(row, ['Hora Parada', 'HORA PARADA', 'hora parada', 'Horário', 'HORARIO']);
-        let pontoReferencia = getField(row, ['Ponto de Referencia', 'PONTO DE REFERENCIA', 'ponto de referencia', 'Endereço', 'ENDERECO']);
-        let distancia = getField(row, ['Dist. (m)', 'DIST. (M)', 'dist', 'Distancia', 'DISTANCIA']);
+        let hora = getField(row, ['Hora Parada', 'HORA PARADA', 'hora parada']);
+        let endereco = getField(row, ['Ponto de Referencia', 'PONTO DE REFERENCIA', 'ponto de referencia']);
+        let distancia = getField(row, ['Dist. (m)', 'DIST. (M)', 'dist']);
         
         if (linha) linhasExtraidas.add(linha);
-        
-        let id = Date.now() + Math.random() * 1000;
-        novosColaboradores.push({
-          id: id,
-          nome: nome,
-          turno: turno,
-          email: email,
-          telefone: celular,
-          cpf: cpf,
-          linha: linha,
-          horario: horaParada,
-          endereco: pontoReferencia,
-          distancia: distancia,
+        novos.push({
+          id: Date.now() + Math.random(),
+          nome, turno, email, telefone: celular, cpf, linha, horario: hora, endereco, distancia,
           autorizado: false
         });
       }
+      if (!novos.length) throw new Error('Nenhum registro com nome.');
       
-      if (novosColaboradores.length === 0) throw new Error('Nenhum registro com nome encontrado.');
-      
-      // Processa aba LINHAS para opções de linha desejada
       let novasLinhas = [];
       if (linhasSheet) {
-        let linhasRows = XLSX.utils.sheet_to_json(linhasSheet, { header: 1, defval: '' });
-        for (let row of linhasRows) {
-          if (row && row[0] && row[0].toString().trim()) {
-            novasLinhas.push(row[0].toString().trim());
-          }
-        }
+        let linhasRows = XLSX.utils.sheet_to_json(linhasSheet, { header: 1 });
+        for (let row of linhasRows) if (row[0] && row[0].toString().trim()) novasLinhas.push(row[0].toString().trim());
       }
-      // Se não encontrou linhas na aba LINHAS, usa as linhas extraídas dos colaboradores
-      if (novasLinhas.length === 0 && linhasExtraidas.size > 0) {
-        novasLinhas = Array.from(linhasExtraidas);
-      }
-      // Fallback
-      if (novasLinhas.length === 0) {
-        novasLinhas = ['Linha 101 - Centro', 'Linha 102 - Norte', 'Linha 103 - Sul'];
-      }
+      if (!novasLinhas.length && linhasExtraidas.size) novasLinhas = Array.from(linhasExtraidas);
+      if (!novasLinhas.length) novasLinhas = ['Linha 101 - Centro', 'Linha 102 - Norte'];
       
-      colaboradores = novosColaboradores;
+      colaboradores = novos;
       linhasDisponiveis = novasLinhas;
       localStorage.setItem('mimo_colaboradores', JSON.stringify(colaboradores));
       localStorage.setItem('mimo_linhas', JSON.stringify(linhasDisponiveis));
       
-      console.log('Primeiro colaborador importado:', colaboradores[0]);
       statusDiv.innerHTML = `✅ ${colaboradores.length} colaboradores e ${linhasDisponiveis.length} linhas importados!`;
       renderAdminColaboradores();
-      if (currentUser && currentUser.role === 'lider') renderColaboradores();
-      if (currentUser && currentUser.role === 'motorista') buscarColaboradorMotorista();
+      if (currentUser?.role === 'lider') renderColaboradores();
+      if (currentUser?.role === 'motorista') buscarColaboradorMotorista();
       setTimeout(() => statusDiv.style.display = 'none', 4000);
     } catch(err) {
       statusDiv.className = 'status-bar status-error';
       statusDiv.innerHTML = '❌ Erro: ' + err.message;
-      console.error(err);
     }
   };
   reader.readAsArrayBuffer(file);
@@ -518,12 +464,12 @@ function handleFile(file) {
 function renderAdminColaboradores() {
   let search = document.getElementById('admin-colab-search')?.value.toLowerCase() || '';
   let filtered = colaboradores.filter(c => c.nome.toLowerCase().includes(search));
-  let html = filtered.map(c => `<div class="pass-card"><div class="avatar">${c.nome.charAt(0)}</div><div><strong>${c.nome}</strong><br>Tel: ${c.telefone || '—'}<br>Linha: ${c.linha || '—'}<br>Endereço: ${c.endereco || '—'}<br>Status: ${c.autorizado ? '<span class="badge-green">Autorizado</span>' : '<span class="badge-yellow">Pendente</span>'}</div><button class="btn btn-sm" onclick="toggleAutorizacao(${c.id})">${c.autorizado ? 'Revogar' : 'Autorizar'}</button></div>`).join('');
-  document.getElementById('admin-colaboradores-container').innerHTML = html || '<p>Nenhum colaborador encontrado. Faça upload da planilha.</p>';
+  let html = filtered.map(c => `<div class="pass-card"><div class="avatar">${c.nome.charAt(0)}</div><div><strong>${c.nome}</strong><br>Tel: ${c.telefone || '—'}<br>Linha: ${c.linha || '—'}</div><button class="btn btn-sm" onclick="toggleAutorizacao(${c.id})">${c.autorizado ? 'Desautorizar' : 'Autorizar'}</button></div>`).join('');
+  document.getElementById('admin-colaboradores-container').innerHTML = html || '<p>Nenhum colaborador.</p>';
 }
 function toggleAutorizacao(id) {
   let colab = colaboradores.find(c => c.id === id);
-  if (colab) { colab.autorizado = !colab.autorizado; localStorage.setItem('mimo_colaboradores', JSON.stringify(colaboradores)); renderAdminColaboradores(); if (currentUser && currentUser.role === 'lider') renderColaboradores(); if (currentUser && currentUser.role === 'motorista') buscarColaboradorMotorista(); alert(`Colaborador ${colab.nome} ${colab.autorizado ? 'autorizado' : 'desautorizado'}.`); }
+  if (colab) { colab.autorizado = !colab.autorizado; localStorage.setItem('mimo_colaboradores', JSON.stringify(colaboradores)); renderAdminColaboradores(); if (currentUser?.role === 'lider') renderColaboradores(); if (currentUser?.role === 'motorista') buscarColaboradorMotorista(); alert(`${colab.nome} ${colab.autorizado ? 'autorizado' : 'desautorizado'}.`); }
 }
 
 // ==================== LÍDER ====================
@@ -533,121 +479,72 @@ function liderTab(tab) {
   if (tab === 'colaboradores') renderColaboradores();
   if (tab === 'solicitacoes') renderMinhasSolicitacoesEmbarque();
 }
-
 function renderColaboradores() {
   let search = document.getElementById('lider-search')?.value.toLowerCase() || '';
   let filtered = colaboradores.filter(c => c.nome.toLowerCase().includes(search));
-  let html = filtered.map(c => `<div class="pass-card"><div class="avatar">${c.nome.charAt(0)}</div><div><strong>${c.nome}</strong><br><small>Tel: ${c.telefone || '—'}</small><br><small>Linha: ${c.linha || '—'}</small><br><small>Status: ${c.autorizado ? '<span class="badge-green">Autorizado</span>' : '<span class="badge-yellow">Pendente</span>'}</small></div><button class="btn btn-sm" onclick="abrirModalSolicitar(${c.id})">Solicitar Liberação</button></div>`).join('');
-  document.getElementById('colaboradores-list').innerHTML = html || '<p>Nenhum colaborador encontrado. Faça upload da planilha no admin.</p>';
+  let html = filtered.map(c => `<div class="pass-card"><div class="avatar">${c.nome.charAt(0)}</div><div><strong>${c.nome}</strong><br><small>Linha: ${c.linha || '—'}</small><br><small>Status: ${c.autorizado ? '✅ Autorizado' : '⏳ Pendente'}</small></div><button class="btn btn-sm" onclick="abrirModalSolicitar(${c.id})">Solicitar</button></div>`).join('');
+  document.getElementById('colaboradores-list').innerHTML = html || '<p>Nenhum colaborador. Faça upload da planilha no admin.</p>';
 }
-
-function abrirModalSolicitar(colabId) {
-  let colab = colaboradores.find(c => c.id === colabId);
+function abrirModalSolicitar(id) {
+  let colab = colaboradores.find(c => c.id === id);
   if (!colab) return;
   currentSolicitacaoColab = colab;
   document.getElementById('sol-colab-nome').value = colab.nome;
-  // Exibe a linha atual
-  document.getElementById('sol-linha-atual').value = (colab.linha && colab.linha !== '') ? colab.linha : 'Não informada';
+  document.getElementById('sol-linha-atual').value = colab.linha || 'Não informada';
   document.getElementById('sol-telefone').value = colab.telefone || 'Não informado';
   document.getElementById('sol-busca-linha').value = '';
   document.getElementById('sol-linha-selecionada').style.display = 'none';
   document.getElementById('solicitar-liberacao-modal').classList.add('open');
   
-  let inputBusca = document.getElementById('sol-busca-linha');
-  let suggestionsDiv = document.getElementById('sol-linha-suggestions');
-  
-  inputBusca.oninput = function() {
+  let input = document.getElementById('sol-busca-linha');
+  let sugg = document.getElementById('sol-linha-suggestions');
+  input.oninput = function() {
     let q = this.value.toLowerCase();
-    if (!q) { suggestionsDiv.style.display = 'none'; return; }
-    let matches = linhasDisponiveis.filter(l => l.toLowerCase().includes(q)).slice(0, 8);
-    if (matches.length === 0) {
-      suggestionsDiv.style.display = 'none';
-      return;
-    }
-    suggestionsDiv.innerHTML = matches.map(l => `<div class="sug-item" onclick="selecionarLinhaSolicitacao('${l.replace(/'/g, "\\'")}')">${l}</div>`).join('');
-    suggestionsDiv.style.display = 'block';
+    if (!q) { sugg.style.display = 'none'; return; }
+    let matches = linhasDisponiveis.filter(l => l.toLowerCase().includes(q)).slice(0, 6);
+    if (!matches.length) { sugg.style.display = 'none'; return; }
+    sugg.innerHTML = matches.map(l => `<div class="sug-item" onclick="selecionarLinha('${l.replace(/'/g, "\\'")}')">${l}</div>`).join('');
+    sugg.style.display = 'block';
   };
-  
-  let closeHandler = function(e) {
-    if (!inputBusca.contains(e.target) && !suggestionsDiv.contains(e.target)) {
-      suggestionsDiv.style.display = 'none';
-      document.removeEventListener('click', closeHandler);
-    }
-  };
-  setTimeout(() => document.addEventListener('click', closeHandler), 100);
+  document.addEventListener('click', function fechar(e) {
+    if (!input.contains(e.target) && !sugg.contains(e.target)) sugg.style.display = 'none';
+  });
 }
-
-function selecionarLinhaSolicitacao(linha) {
+function selecionarLinha(linha) {
   document.getElementById('sol-busca-linha').value = linha;
   document.getElementById('sol-linha-suggestions').style.display = 'none';
   document.getElementById('sol-linha-nome').innerText = linha;
   document.getElementById('sol-linha-selecionada').style.display = 'block';
 }
-
 function enviarSolicitacaoEmbarque() {
-  let linhaSelecionada = document.getElementById('sol-busca-linha').value.trim();
-  if (!linhaSelecionada) {
-    let msgDiv = document.getElementById('sol-msg');
-    msgDiv.innerHTML = 'Selecione uma linha para embarque.';
-    msgDiv.className = 'status-bar status-error';
-    msgDiv.style.display = 'block';
-    setTimeout(() => msgDiv.style.display = 'none', 3000);
-    return;
-  }
-  if (!currentSolicitacaoColab) return;
-  let novaSol = {
-    id: Date.now(),
-    colaboradorId: currentSolicitacaoColab.id,
-    linhaSolicitada: linhaSelecionada,
-    liderId: currentUser.username,
-    status: 'pendente',
-    data: new Date().toISOString()
-  };
-  solicitacoesEmbarque.push(novaSol);
+  let linha = document.getElementById('sol-busca-linha').value.trim();
+  if (!linha) { alert('Selecione uma linha.'); return; }
+  let sol = { id: Date.now(), colaboradorId: currentSolicitacaoColab.id, linhaSolicitada: linha, liderId: currentUser.username, status: 'pendente' };
+  solicitacoesEmbarque.push(sol);
   localStorage.setItem('mimo_solicitacoes_embarque', JSON.stringify(solicitacoesEmbarque));
-  document.getElementById('solicitar-liberacao-modal').classList.remove('open');
-  alert('Solicitação de embarque enviada ao administrador.');
+  closeSolicitarModal();
+  alert('Solicitação enviada!');
   renderMinhasSolicitacoesEmbarque();
 }
-
 function renderMinhasSolicitacoesEmbarque() {
   let minhas = solicitacoesEmbarque.filter(s => s.liderId === currentUser.username);
-  let html = minhas.length === 0 ? '<p>Nenhuma solicitação enviada.</p>' : '';
+  let html = minhas.length ? '' : '<p>Nenhuma solicitação.</p>';
   minhas.forEach(s => {
     let colab = colaboradores.find(c => c.id === s.colaboradorId);
-    let statusText = s.status === 'pendente' ? 'Pendente' : (s.status === 'aprovado' ? 'Aprovado ✓' : 'Reprovado ✗');
-    let statusClass = s.status === 'pendente' ? 'badge-yellow' : (s.status === 'aprovado' ? 'badge-green' : 'badge-red');
-    html += `<div class="card" style="margin-bottom:8px"><div><strong>${colab ? colab.nome : 'Colaborador'}</strong></div><div>Linha solicitada: ${s.linhaSolicitada}</div><div><span class="badge ${statusClass}">${statusText}</span></div></div>`;
+    html += `<div class="card"><div><strong>${colab?.nome}</strong></div><div>Linha solicitada: ${s.linhaSolicitada}</div><div>Status: ${s.status === 'pendente' ? 'Pendente' : (s.status === 'aprovado' ? 'Aprovado' : 'Reprovado')}</div></div>`;
   });
   document.getElementById('lider-solicitacoes-list').innerHTML = html;
 }
-
-function closeSolicitarModal() {
-  document.getElementById('solicitar-liberacao-modal').classList.remove('open');
-  currentSolicitacaoColab = null;
-}
+function closeSolicitarModal() { document.getElementById('solicitar-liberacao-modal').classList.remove('open'); }
 
 // ==================== MOTORISTA ====================
 function buscarColaboradorMotorista() {
   let search = document.getElementById('motorista-search').value.toLowerCase();
   let encontrados = colaboradores.filter(c => c.autorizado === true && c.nome.toLowerCase().includes(search));
-  let html = '';
-  if (encontrados.length === 0) {
-    html = '<div class="card" style="text-align:center; color:var(--gray-400)"><i class="ti ti-mood-empty" style="font-size:36px"></i><p>Nenhum colaborador autorizado encontrado.</p></div>';
-  } else {
-    html = encontrados.map(c => `
-      <div class="pass-card">
-        <div class="avatar">${c.nome.charAt(0)}</div>
-        <div style="flex:1">
-          <strong>${c.nome}</strong><br>
-          <small><i class="ti ti-bus" style="font-size:12px"></i> Linha: ${c.linha || '—'}</small><br>
-          <small><i class="ti ti-map-pin" style="font-size:12px"></i> Endereço: ${c.endereco || 'Não informado'}</small><br>
-          <small><i class="ti ti-clock" style="font-size:12px"></i> Horário: ${c.horario || 'Não informado'}</small>
-        </div>
-        <div><span class="badge badge-green"><i class="ti ti-circle-check"></i> Autorizado</span></div>
-      </div>
-    `).join('');
-  }
+  let html = encontrados.length ? '' : '<div class="card">Nenhum autorizado.</div>';
+  encontrados.forEach(c => {
+    html += `<div class="pass-card"><div class="avatar">${c.nome.charAt(0)}</div><div><strong>${c.nome}</strong><br>Linha: ${c.linha}<br>Endereço: ${c.endereco || '—'}</div><div><span class="badge badge-green">Autorizado</span></div></div>`;
+  });
   document.getElementById('motorista-resultado').innerHTML = html;
 }
 </script>
