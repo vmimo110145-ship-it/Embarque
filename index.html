@@ -449,6 +449,7 @@ function handleFile(file) {
       localStorage.setItem('mimo_linhas', JSON.stringify(linhasDisponiveis));
       
       statusDiv.innerHTML = `✅ ${colaboradores.length} colaboradores e ${linhasDisponiveis.length} linhas importados!`;
+      // Forçar atualização das telas
       renderAdminColaboradores();
       if (currentUser?.role === 'lider') renderColaboradores();
       if (currentUser?.role === 'motorista') buscarColaboradorMotorista();
