@@ -11,7 +11,12 @@
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f2f5;color:var(--gray-900);}
 #login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a1a1a 0%,#2d1010 100%);}
 .login-card{background:#fff;border-radius:var(--radius-lg);padding:36px 32px;width:100%;max-width:420px;box-shadow:0 8px 32px rgba(0,0,0,0.18);}
-.login-logo{height:40px;margin:0 auto 24px;display:block;}
+.logo-text{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:24px;}
+.logo-text i{font-size:42px;color:var(--red);}
+.logo-text span{font-size:28px;font-weight:700;background:linear-gradient(135deg,#C0392B,#E74C3C);-webkit-background-clip:text;background-clip:text;color:transparent;}
+.topbar-logo{display:flex;align-items:center;gap:8px;background:transparent;}
+.topbar-logo i{font-size:24px;color:var(--red);}
+.topbar-logo span{font-size:16px;font-weight:600;color:#fff;}
 .role-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px;}
 .role-btn{padding:12px 6px;border-radius:var(--radius-md);border:1.5px solid var(--gray-200);background:var(--gray-50);cursor:pointer;text-align:center;}
 .role-btn.selected{border-color:var(--red);background:var(--red-light);}
@@ -32,7 +37,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .hero{position:relative;height:140px;background:#2c3e50;border-radius:var(--radius-lg);margin-bottom:20px;overflow:hidden;}
 .hero-overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,0.7),transparent);display:flex;align-items:center;padding:0 24px;}
 .hero-text p:first-child{font-size:18px;font-weight:600;color:#fff;}
-.stat{background:var(--gray-50);border-radius:var(--radius-md);padding:14px;border:1px solid var(--gray-200);}
 .badge{font-size:11px;padding:3px 9px;border-radius:20px;display:inline-flex;align-items:center;gap:4px;}
 .badge-green{background:var(--green-light);color:var(--green);}
 .badge-red{background:var(--red-light);color:var(--red);}
@@ -48,9 +52,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .avatar{width:42px;height:42px;border-radius:50%;background:var(--red-light);display:flex;align-items:center;justify-content:center;font-weight:600;color:var(--red);}
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;align-items:center;justify-content:center;}
 .overlay.open{display:flex;}
-.modal{background:#fff;border-radius:var(--radius-lg);width:100%;max-width:500px;}
+.modal{background:#fff;border-radius:var(--radius-lg);width:100%;max-width:700px;}
 .modal-header{padding:16px 20px;border-bottom:1px solid var(--gray-200);}
-.modal-body{padding:20px;}
+.modal-body{padding:20px;max-height:70vh;overflow-y:auto;}
 .modal-footer{padding:12px 20px;display:flex;gap:8px;justify-content:flex-end;}
 .tabs{display:flex;gap:6px;margin-bottom:16px;background:var(--gray-100);padding:4px;border-radius:var(--radius-md);}
 .tab-btn{flex:1;padding:8px;border:none;background:transparent;border-radius:var(--radius-sm);cursor:pointer;}
@@ -64,13 +68,18 @@ th,td{padding:10px;text-align:left;border-bottom:1px solid var(--gray-200);}
 .status-success{background:var(--green-light);color:var(--green);}
 .status-error{background:var(--red-light);color:var(--red);}
 .drop-zone{border:2px dashed var(--gray-400);padding:40px;text-align:center;cursor:pointer;border-radius:var(--radius-md);}
+.passageiro-item{cursor:pointer;transition:background 0.1s;}
+.passageiro-item:hover{background:var(--gray-50);}
+.pagination{display:flex;gap:5px;justify-content:center;margin-top:15px;flex-wrap:wrap;}
+.pagination button{padding:5px 10px;border:1px solid var(--gray-200);background:white;cursor:pointer;border-radius:4px;}
+.pagination button.active{background:var(--red);color:white;border-color:var(--red);}
 </style>
 </head>
 <body>
 
 <div id="login-screen">
   <div class="login-card">
-    <img class="login-logo" src="data:image/jpeg;base64,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" alt="Viação MIMO"/>
+    <div class="logo-text"><i class="ti ti-bus"></i><span>Viação Mimo</span></div>
     <p class="login-title">Gestão de Embarque</p>
     <p class="login-sub">Acesso para Admin, Líder e Motorista</p>
     <div class="role-grid">
@@ -89,6 +98,8 @@ th,td{padding:10px;text-align:left;border-bottom:1px solid var(--gray-200);}
 
 <div id="app" style="display:none">
   <div class="topbar">
+    <div class="topbar-logo"><i class="ti ti-bus"></i><span>Viação Mimo</span></div>
+    <div style="width:1px;height:28px;background:rgba(255,255,255,0.15);"></div>
     <span class="topbar-title" id="topbar-title">Gestão de Embarque</span>
     <span class="role-badge" id="topbar-role-badge"></span>
     <button class="btn-logout" onclick="doLogout()">Sair</button>
@@ -96,16 +107,26 @@ th,td{padding:10px;text-align:left;border-bottom:1px solid var(--gray-200);}
   <div class="main">
     <div class="hero"><div class="hero-overlay"><div class="hero-text"><p id="hero-title">Painel</p><p id="hero-sub"></p></div></div></div>
     
-    <!-- Admin Panel (only after password change) -->
+    <!-- Admin Panel -->
     <div id="admin-panel" style="display:none">
-      <div class="tabs"><button class="tab-btn active" onclick="adminTab('solicitacoes')">Solicitações de Líder</button><button class="tab-btn" onclick="adminTab('lideres')">Líderes Aprovados</button><button class="tab-btn" onclick="adminTab('upload')">Upload Planilha</button></div>
+      <div class="tabs">
+        <button class="tab-btn active" onclick="adminTab('solicitacoes')">Solicitações de Líder</button>
+        <button class="tab-btn" onclick="adminTab('lideres')">Líderes Aprovados</button>
+        <button class="tab-btn" onclick="adminTab('upload')">Upload Planilha</button>
+        <button class="tab-btn" onclick="adminTab('passageiros')">Lista de Passageiros</button>
+      </div>
       <div id="admin-solicitacoes" class="card"><h3>Cadastros de Líder Aguardando Aprovação</h3><div id="solicitacoes-lider-list"></div></div>
       <div id="admin-lideres" style="display:none" class="card"><h3>Líderes Autorizados</h3><div id="lideres-list"></div></div>
       <div id="admin-upload" style="display:none" class="card">
         <h3>Upload de Lista de Passageiros</h3>
-        <div class="drop-zone" onclick="document.getElementById('file-input').click()">Arraste ou clique para enviar arquivo Excel (abas: PASSAGEIROS e LINHAS)</div>
-        <input type="file" id="file-input" style="display:none" onchange="handleFile(this.files[0])">
+        <div class="drop-zone" onclick="document.getElementById('file-input').click()">Arraste ou clique para enviar arquivo Excel (aba: PASSAGEIROS)</div>
+        <input type="file" id="file-input" accept=".xlsx,.xls" style="display:none" onchange="handleFile(this.files[0])">
         <div id="upload-status" class="status-bar" style="display:none"></div>
+      </div>
+      <div id="admin-passageiros" style="display:none" class="card">
+        <h3>Passageiros Importados</h3>
+        <div class="search-wrap"><i class="ti ti-search"></i><input type="text" id="admin-pass-search" placeholder="Buscar passageiro..." oninput="renderPassageirosList()"></div>
+        <div id="passageiros-list-container"></div>
       </div>
     </div>
     
@@ -116,10 +137,13 @@ th,td{padding:10px;text-align:left;border-bottom:1px solid var(--gray-200);}
       <div id="lider-cadastro" style="display:none" class="card"><h3>Novo Colaborador</h3><div class="form-group"><label>Nome completo</label><input type="text" id="colab-nome"></div><div class="form-group"><label>Linha</label><input type="text" id="colab-linha" placeholder="Ex: Linha 001 - Centro"></div><div class="form-group"><label>Endereço de embarque</label><input type="text" id="colab-endereco"></div><div class="form-group"><label>Horário</label><input type="time" id="colab-horario"></div><button class="btn btn-primary" onclick="cadastrarColaborador()">Cadastrar e Solicitar Liberação</button></div>
     </div>
     
-    <!-- Motorista Panel -->
+    <!-- Motorista Panel - Consulta de autorizados -->
     <div id="motorista-panel" style="display:none">
-      <div class="search-wrap"><i class="ti ti-search"></i><input type="text" id="motorista-search" placeholder="Buscar colaborador autorizado" oninput="buscarColaboradorMotorista()"></div>
-      <div id="motorista-resultado"></div>
+      <div class="card">
+        <h3>Consulta de Colaboradores com Embarque Liberado</h3>
+        <div class="search-wrap"><i class="ti ti-search"></i><input type="text" id="motorista-search" placeholder="Buscar por nome" oninput="buscarColaboradorMotorista()"></div>
+        <div id="motorista-resultado"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -152,6 +176,15 @@ th,td{padding:10px;text-align:left;border-bottom:1px solid var(--gray-200);}
   </div>
 </div>
 
+<!-- Modal para visualizar detalhes do passageiro (Admin) -->
+<div id="passageiro-detail-modal" class="overlay">
+  <div class="modal">
+    <div class="modal-header"><h3>Detalhes do Passageiro</h3></div>
+    <div class="modal-body" id="passageiro-detail-body"></div>
+    <div class="modal-footer"><button class="btn" onclick="closePassageiroModal()">Fechar</button></div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script>
 // DADOS PERSISTIDOS
@@ -164,7 +197,9 @@ let colaboradores = JSON.parse(localStorage.getItem('mimo_colaboradores')) || []
 let solicitacoes = JSON.parse(localStorage.getItem('mimo_solicitacoes')) || [];
 let passageirosData = JSON.parse(localStorage.getItem('mimo_passageiros')) || [];
 let currentUser = null;
-let pendingAdmin = null; // guarda o admin que logou e precisa trocar senha
+let pendingAdmin = null;
+let currentPage = 1;
+const itemsPerPage = 15;
 
 // ========== FUNÇÕES DE TELA ==========
 function selectRole(role) {
@@ -199,15 +234,11 @@ function doLogin() {
   let username = document.getElementById('login-user').value.trim().toLowerCase();
   let password = document.getElementById('login-pass').value;
   let user = users[username];
-  
-  // Verifica se é admin e está com firstLogin = true (primeiro acesso ou senha padrão)
   if (user && user.role === 'admin' && user.password === password && user.firstLogin === true) {
     pendingAdmin = { username, ...user };
     document.getElementById('change-password-modal').classList.add('open');
     return;
   }
-  
-  // Login normal
   if (user && user.password === password && user.status === 'aprovado') {
     currentUser = { username, ...user };
     document.getElementById('login-screen').style.display = 'none';
@@ -247,13 +278,14 @@ function setupDashboard() {
   let displayRole = role === 'admin' ? 'Admin' : (role === 'lider' ? 'Líder' : 'Motorista');
   document.getElementById('topbar-role-badge').innerHTML = displayRole;
   document.getElementById('topbar-role-badge').className = `role-badge role-${role}`;
-  document.getElementById('hero-title').innerText = role === 'admin' ? 'Painel Administrativo' : (role === 'lider' ? 'Gestão de Equipe' : 'Consulta de Autorizações');
-  document.getElementById('hero-sub').innerText = role === 'admin' ? 'Gerencie solicitações, líderes e faça upload de passageiros' : (role === 'lider' ? 'Cadastre colaboradores e solicite liberação' : 'Consulte autorizações de embarque');
+  document.getElementById('hero-title').innerText = role === 'admin' ? 'Painel Administrativo' : (role === 'lider' ? 'Gestão de Equipe' : 'Consulta de Embarque');
+  document.getElementById('hero-sub').innerText = role === 'admin' ? 'Gerencie solicitações, líderes e passageiros' : (role === 'lider' ? 'Cadastre colaboradores e solicite liberação' : 'Busque colaboradores com embarque autorizado');
   document.getElementById('admin-panel').style.display = role === 'admin' ? 'block' : 'none';
   document.getElementById('lider-panel').style.display = role === 'lider' ? 'block' : 'none';
   document.getElementById('motorista-panel').style.display = role === 'motorista' ? 'block' : 'none';
-  if (role === 'admin') { renderLiderRequests(); renderLideresAprovados(); }
+  if (role === 'admin') { renderLiderRequests(); renderLideresAprovados(); renderPassageirosList(); }
   if (role === 'lider') { renderColaboradores(); }
+  if (role === 'motorista') { buscarColaboradorMotorista(); } // carregar todos ao entrar
 }
 
 // ========== ADMIN ==========
@@ -261,10 +293,12 @@ function adminTab(tab) {
   document.getElementById('admin-solicitacoes').style.display = tab === 'solicitacoes' ? 'block' : 'none';
   document.getElementById('admin-lideres').style.display = tab === 'lideres' ? 'block' : 'none';
   document.getElementById('admin-upload').style.display = tab === 'upload' ? 'block' : 'none';
+  document.getElementById('admin-passageiros').style.display = tab === 'passageiros' ? 'block' : 'none';
   document.querySelectorAll('#admin-panel .tab-btn').forEach(btn => btn.classList.remove('active'));
   event.currentTarget.classList.add('active');
   if (tab === 'solicitacoes') renderLiderRequests();
   if (tab === 'lideres') renderLideresAprovados();
+  if (tab === 'passageiros') renderPassageirosList();
 }
 
 function renderLiderRequests() {
@@ -303,6 +337,7 @@ function renderLideresAprovados() {
 }
 function removerLider(email) { delete users[email]; localStorage.setItem('mimo_users', JSON.stringify(users)); renderLideresAprovados(); alert('Líder removido.'); }
 
+// Upload de planilha
 function handleFile(file) {
   if (!file) return;
   let statusDiv = document.getElementById('upload-status');
@@ -320,6 +355,7 @@ function handleFile(file) {
       passageirosData = rows;
       localStorage.setItem('mimo_passageiros', JSON.stringify(passageirosData));
       statusDiv.innerHTML = `✅ ${rows.length} passageiros importados com sucesso!`;
+      renderPassageirosList();
       setTimeout(() => statusDiv.style.display = 'none', 3000);
     } catch(err) {
       statusDiv.className = 'status-bar status-error';
@@ -328,6 +364,56 @@ function handleFile(file) {
   };
   reader.readAsArrayBuffer(file);
 }
+
+function renderPassageirosList() {
+  let search = document.getElementById('admin-pass-search')?.value.toLowerCase() || '';
+  let filtered = passageirosData.filter(p => {
+    let nome = (p.NOME || p.nome || p.Nome || '').toLowerCase();
+    let linha = (p.LINHA || p.linha || p.Linha || '').toLowerCase();
+    return nome.includes(search) || linha.includes(search);
+  });
+  let totalPages = Math.ceil(filtered.length / itemsPerPage);
+  if (currentPage > totalPages) currentPage = 1;
+  let start = (currentPage - 1) * itemsPerPage;
+  let end = start + itemsPerPage;
+  let pageItems = filtered.slice(start, end);
+  
+  let html = '';
+  if (pageItems.length === 0) html = '<p>Nenhum passageiro encontrado.</p>';
+  else {
+    html = '<table style="width:100%"><thead><tr><th>Nome</th><th>Linha</th><th>Status</th></tr></thead><tbody>';
+    pageItems.forEach((p, idx) => {
+      let nome = p.NOME || p.nome || p.Nome || '—';
+      let linha = p.LINHA || p.linha || p.Linha || '—';
+      let status = p.STATUS || p.status || 'Pendente';
+      let statusClass = status === 'Autorizado' ? 'badge-green' : (status === 'Negado' ? 'badge-red' : 'badge-yellow');
+      html += `<tr class="passageiro-item" onclick="showPassageiroDetail(${start + idx})"><td>${nome}</td><td>${linha}</td><td><span class="badge ${statusClass}">${status}</span></td></tr>`;
+    });
+    html += '</tbody></table>';
+    if (totalPages > 1) {
+      html += '<div class="pagination">';
+      for (let i = 1; i <= totalPages; i++) {
+        html += `<button class="${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+      }
+      html += '</div>';
+    }
+  }
+  document.getElementById('passageiros-list-container').innerHTML = html;
+}
+
+function goToPage(page) { currentPage = page; renderPassageirosList(); }
+
+function showPassageiroDetail(index) {
+  let p = passageirosData[index];
+  let html = '<table style="width:100%">';
+  for (let [key, value] of Object.entries(p)) {
+    html += `<tr><td style="font-weight:500">${key}</td><td>${value !== undefined ? value : '—'}</td></tr>`;
+  }
+  html += '</table>';
+  document.getElementById('passageiro-detail-body').innerHTML = html;
+  document.getElementById('passageiro-detail-modal').classList.add('open');
+}
+function closePassageiroModal() { document.getElementById('passageiro-detail-modal').classList.remove('open'); }
 
 // ========== LÍDER ==========
 function liderTab(tab) {
@@ -372,29 +458,52 @@ function solicitarLiberacao(colabId) {
   renderColaboradores();
 }
 
-// ========== MOTORISTA ==========
+// ========== MOTORISTA - CONSULTA DE AUTORIZADOS ==========
 function buscarColaboradorMotorista() {
   let search = document.getElementById('motorista-search').value.toLowerCase();
+  // Filtra apenas colaboradores com autorizado = true
   let encontrados = colaboradores.filter(c => c.autorizado === true && c.nome.toLowerCase().includes(search));
-  let html = encontrados.length === 0 ? '<div class="card">Nenhum colaborador autorizado encontrado.</div>' : '';
-  encontrados.forEach(c => { html += `<div class="pass-card"><div class="avatar">${c.nome.charAt(0)}</div><div><strong>${c.nome}</strong><br>Linha: ${c.linha}<br>Endereço: ${c.endereco || '-'}<br>Horário: ${c.horario || '-'}</div><div><span class="badge-green">Autorizado ✓</span></div></div>`; });
+  let html = '';
+  if (encontrados.length === 0) {
+    html = '<div class="card" style="text-align:center; color:var(--gray-400)"><i class="ti ti-mood-empty" style="font-size:36px"></i><p>Nenhum colaborador autorizado encontrado.</p></div>';
+  } else {
+    html = encontrados.map(c => `
+      <div class="pass-card">
+        <div class="avatar">${c.nome.charAt(0)}</div>
+        <div style="flex:1">
+          <strong>${c.nome}</strong><br>
+          <small><i class="ti ti-bus" style="font-size:12px"></i> Linha: ${c.linha}</small><br>
+          <small><i class="ti ti-map-pin" style="font-size:12px"></i> Endereço: ${c.endereco || 'Não informado'}</small><br>
+          <small><i class="ti ti-clock" style="font-size:12px"></i> Horário: ${c.horario || 'Não informado'}</small>
+        </div>
+        <div><span class="badge badge-green"><i class="ti ti-circle-check"></i> Autorizado</span></div>
+      </div>
+    `).join('');
+  }
   document.getElementById('motorista-resultado').innerHTML = html;
 }
 
-// Inicialização com dados de exemplo
+// ========== DADOS DE EXEMPLO ==========
 if (colaboradores.length === 0) {
   colaboradores.push({ id: 1, nome: 'Carlos Silva', linha: 'Linha 101 - Centro', endereco: 'Rua A, 123', horario: '07:30', autorizado: true, liderId: 'lider@mercadolivre.com' });
   colaboradores.push({ id: 2, nome: 'Maria Souza', linha: 'Linha 102 - Norte', endereco: 'Av. B, 456', horario: '08:00', autorizado: false, liderId: 'lider@mercadolivre.com' });
+  colaboradores.push({ id: 3, nome: 'José Oliveira', linha: 'Linha 103 - Sul', endereco: 'Praça C, 789', horario: '09:15', autorizado: true, liderId: 'lider@mercadolivre.com' });
   localStorage.setItem('mimo_colaboradores', JSON.stringify(colaboradores));
 }
 if (solicitacoes.length === 0) {
   solicitacoes.push({ id: 100, colaboradorId: 2, linhaSolicitada: 'Linha 102 - Norte', periodo: '20/05/2025', obs: 'Solicitação pendente', status: 'pendente' });
   localStorage.setItem('mimo_solicitacoes', JSON.stringify(solicitacoes));
 }
-// Líder de exemplo pré-aprovado
 if (!users['lider@mercadolivre.com']) {
   users['lider@mercadolivre.com'] = { password: 'lider123', role: 'lider', nome: 'Líder Exemplo', status: 'aprovado', firstLogin: false };
   localStorage.setItem('mimo_users', JSON.stringify(users));
+}
+if (passageirosData.length === 0) {
+  passageirosData = [
+    { NOME: 'João Pereira', LINHA: 'Linha 101 - Centro', STATUS: 'Autorizado', ENDERECO: 'Rua das Flores, 100', HORARIO: '07:45' },
+    { NOME: 'Ana Costa', LINHA: 'Linha 102 - Norte', STATUS: 'Pendente', ENDERECO: 'Av. Paulista, 2000', HORARIO: '08:15' }
+  ];
+  localStorage.setItem('mimo_passageiros', JSON.stringify(passageirosData));
 }
 </script>
 </body>
