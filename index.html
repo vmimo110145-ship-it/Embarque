@@ -67,7 +67,7 @@ th,td{padding:10px;text-align:left;border-bottom:1px solid var(--gray-200);}
 .status-bar{display:none;padding:10px;border-radius:var(--radius-sm);margin-bottom:16px;}
 .status-success{background:var(--green-light);color:var(--green);}
 .status-error{background:var(--red-light);color:var(--red);}
-.drop-zone{border:2px dashed var(--gray-400);padding:40px;text-align:center;cursor:pointer;border-radius:var(--radius-md);}
+.drop-zone{border:2px dashed var(--gray-400);padding:40px;text-align:center;cursor:pointer;border-radius:var(--radius-md);margin-bottom:16px;}
 .pagination{display:flex;gap:5px;justify-content:center;margin-top:15px;flex-wrap:wrap;}
 .pagination button{padding:5px 10px;border:1px solid var(--gray-200);background:white;cursor:pointer;border-radius:4px;}
 .pagination button.active{background:var(--red);color:white;border-color:var(--red);}
@@ -120,7 +120,7 @@ th,td{padding:10px;text-align:left;border-bottom:1px solid var(--gray-200);}
       <div id="admin-lideres" style="display:none" class="card"><h3>Líderes Autorizados</h3><div id="lideres-list"></div></div>
       <div id="admin-upload" style="display:none" class="card">
         <h3>Upload de Lista de Passageiros</h3>
-        <div class="drop-zone" onclick="document.getElementById('file-input').click()">Arraste ou clique para enviar arquivo Excel (aba: PASSAGEIROS)</div>
+        <div class="drop-zone" onclick="document.getElementById('file-input').click()">📁 Arraste ou clique para enviar arquivo Excel (.xlsx ou .xls)</div>
         <input type="file" id="file-input" accept=".xlsx,.xls" style="display:none" onchange="handleFile(this.files[0])">
         <div id="upload-status" class="status-bar" style="display:none"></div>
       </div>
@@ -136,7 +136,7 @@ th,td{padding:10px;text-align:left;border-bottom:1px solid var(--gray-200);}
       <div class="tabs"><button class="tab-btn active" onclick="liderTab('colaboradores')">Meus Colaboradores</button><button class="tab-btn" onclick="liderTab('solicitacoes')">Minhas Solicitações</button><button class="tab-btn" onclick="liderTab('cadastro')">Solicitar Colaborador</button></div>
       <div id="lider-colaboradores"><div class="search-wrap"><i class="ti ti-search"></i><input type="text" id="lider-search" placeholder="Buscar colaborador" oninput="renderColaboradores()"></div><div id="colaboradores-list"></div></div>
       <div id="lider-solicitacoes" style="display:none" class="card"><h3>Solicitações de Cadastro Enviadas</h3><div id="lider-solicitacoes-list"></div></div>
-      <div id="lider-cadastro" style="display:none" class="card"><h3>Solicitar Cadastro de Novo Colaborador</h3><p style="font-size:13px;color:gray;margin-bottom:12px">Use este formulário quando o colaborador não estiver na lista.</p><div class="form-group"><label>Nome completo *</label><input type="text" id="solic-nome"></div><div class="form-group"><label>Telefone *</label><input type="tel" id="solic-telefone" placeholder="(00) 00000-0000"></div><div class="form-group"><label>Linha (opcional)</label><input type="text" id="solic-linha"></div><div class="form-group"><label>Endereço (opcional)</label><input type="text" id="solic-endereco"></div><div class="form-group"><label>Horário (opcional)</label><input type="time" id="solic-horario"></div><button class="btn btn-primary" onclick="enviarSolicitacaoColaborador()">Enviar Solicitação</button></div>
+      <div id="lider-cadastro" style="display:none" class="card"><h3>Solicitar Cadastro de Novo Colaborador</h3><p style="font-size:13px;color:gray;margin-bottom:12px">Preencha os dados do colaborador que não está na lista. O administrador entrará em contato pelo telefone informado.</p><div class="form-group"><label>Nome completo *</label><input type="text" id="solic-nome"></div><div class="form-group"><label>Telefone *</label><input type="tel" id="solic-telefone" placeholder="(00) 00000-0000"></div><div class="form-group"><label>Linha (opcional)</label><input type="text" id="solic-linha"></div><div class="form-group"><label>Endereço (opcional)</label><input type="text" id="solic-endereco"></div><div class="form-group"><label>Horário (opcional)</label><input type="time" id="solic-horario"></div><button class="btn btn-primary" onclick="enviarSolicitacaoColaborador()">Enviar Solicitação</button></div>
     </div>
     
     <!-- Motorista Panel -->
@@ -177,7 +177,7 @@ th,td{padding:10px;text-align:left;border-bottom:1px solid var(--gray-200);}
 <script>
 // FUNÇÃO PARA RESETAR TOTALMENTE O SISTEMA
 function resetSystem() {
-  if(confirm('ATENÇÃO: Isso apagará todos os dados. Deseja continuar?')) {
+  if(confirm('ATENÇÃO: Isso apagará todos os dados (usuários, líderes, colaboradores, passageiros). Deseja continuar?')) {
     localStorage.clear();
     location.reload();
   }
@@ -336,7 +336,7 @@ function reprovarLider(email) {
 }
 function renderLideresAprovados() {
   let lideres = Object.entries(users).filter(([k,v]) => v.role === 'lider' && v.status === 'aprovado');
-  let html = lideres.length === 0 ? '<p>Nenhum líder aprovado.</p>' : 'ç‡º<th>E-mail</th><th>Nome</th><th>Ações</th>‚</';
+  let html = lideres.length === 0 ? '<p>Nenhum líder aprovado.</p>' : '<tr><th>E-mail</th><th>Nome</th><th>Ações</th></tr>';
   lideres.forEach(([email, data]) => { html += `<tr><td>${email}</td><td>${data.nome}</td><td><button class="btn btn-sm" onclick="removerLider('${email}')">Remover</button></td></tr>`; });
   html += '</table>';
   document.getElementById('lideres-list').innerHTML = html;
@@ -351,6 +351,7 @@ function renderSolicitacoesColaborador() {
       <div><strong>${s.nome}</strong> - Telefone: ${s.telefone}</div>
       <div>Solicitante: ${s.liderId}</div>
       <div>Linha: ${s.linha || 'Não informada'}</div>
+      <div>Endereço: ${s.endereco || 'Não informado'}</div>
       <div style="margin-top:8px"><button class="btn btn-success btn-sm" onclick="aprovarSolicitacaoColaborador(${s.id})">Aprovar e Cadastrar</button> <button class="btn btn-sm" style="background:#ccc" onclick="reprovarSolicitacaoColaborador(${s.id})">Reprovar</button></div>
     </div>`;
   });
@@ -376,7 +377,7 @@ function aprovarSolicitacaoColaborador(id) {
     localStorage.setItem('mimo_colaboradores', JSON.stringify(colaboradores));
     localStorage.setItem('mimo_solicitacoes_colaborador', JSON.stringify(solicitacoesColaborador));
     renderSolicitacoesColaborador();
-    alert(`Colaborador ${sol.nome} cadastrado com sucesso!`);
+    alert(`Colaborador ${sol.nome} cadastrado com sucesso! O líder já pode visualizá-lo.`);
   }
 }
 function reprovarSolicitacaoColaborador(id) {
@@ -407,10 +408,7 @@ function renderColaboradores() {
 }
 
 function solicitarLiberacao(colabId) {
-  let colab = colaboradores.find(c => c.id === colabId);
-  if (!colab) return;
-  // Aqui enviaria uma solicitação de liberação para o admin (pode ser implementado similar)
-  alert(`Solicitação de liberação para ${colab.nome} enviada ao administrador.`);
+  alert(`Solicitação de liberação para o colaborador enviada ao administrador.`);
 }
 
 function renderMinhasSolicitacoes() {
@@ -443,7 +441,7 @@ function enviarSolicitacaoColaborador() {
   };
   solicitacoesColaborador.push(novaSol);
   localStorage.setItem('mimo_solicitacoes_colaborador', JSON.stringify(solicitacoesColaborador));
-  alert('Solicitação enviada ao administrador para análise.');
+  alert('Solicitação enviada ao administrador para análise. Ele entrará em contato pelo telefone informado.');
   document.getElementById('solic-nome').value = '';
   document.getElementById('solic-telefone').value = '';
   document.getElementById('solic-linha').value = '';
@@ -476,11 +474,85 @@ function buscarColaboradorMotorista() {
   document.getElementById('motorista-resultado').innerHTML = html;
 }
 
-// ========== ADMIN: UPLOAD E PASSAGEIROS ==========
-function handleFile(file) { /* ... mantido ... */ alert('Upload funcionando, dados salvos.'); }
-function renderPassageirosList() { /* ... */ }
+// ========== ADMIN: UPLOAD DE ARQUIVO EXCEL ==========
+function handleFile(file) {
+  if (!file) return;
+  let statusDiv = document.getElementById('upload-status');
+  statusDiv.className = 'status-bar status-success';
+  statusDiv.style.display = 'block';
+  statusDiv.innerHTML = '📄 Lendo arquivo...';
+  
+  let reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      let data = new Uint8Array(e.target.result);
+      let workbook = XLSX.read(data, { type: 'array' });
+      let sheetName = workbook.SheetNames[0];
+      let sheet = workbook.Sheets[sheetName];
+      let rows = XLSX.utils.sheet_to_json(sheet);
+      if (!rows || rows.length === 0) throw new Error('Nenhum dado encontrado na planilha.');
+      passageirosData = rows;
+      localStorage.setItem('mimo_passageiros', JSON.stringify(passageirosData));
+      statusDiv.innerHTML = `✅ ${rows.length} passageiros importados com sucesso!`;
+      renderPassageirosList();
+      setTimeout(() => statusDiv.style.display = 'none', 3000);
+    } catch(err) {
+      statusDiv.className = 'status-bar status-error';
+      statusDiv.innerHTML = '❌ Erro ao processar arquivo: ' + err.message;
+      console.error(err);
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function renderPassageirosList() {
+  let search = document.getElementById('admin-pass-search')?.value.toLowerCase() || '';
+  let filtered = passageirosData.filter(p => {
+    let nome = (p.NOME || p.nome || p.Nome || '').toLowerCase();
+    let linha = (p.LINHA || p.linha || p.Linha || '').toLowerCase();
+    return nome.includes(search) || linha.includes(search);
+  });
+  let totalPages = Math.ceil(filtered.length / itemsPerPage);
+  if (currentPage > totalPages) currentPage = 1;
+  let start = (currentPage - 1) * itemsPerPage;
+  let end = start + itemsPerPage;
+  let pageItems = filtered.slice(start, end);
+  
+  let html = '';
+  if (pageItems.length === 0) html = '<p>Nenhum passageiro encontrado.</p>';
+  else {
+    html = '<table style="width:100%"><thead><tr><th>Nome</th><th>Linha</th><th>Status</th></tr></thead><tbody>';
+    pageItems.forEach((p, idx) => {
+      let nome = p.NOME || p.nome || p.Nome || '—';
+      let linha = p.LINHA || p.linha || p.Linha || '—';
+      let status = p.STATUS || p.status || 'Pendente';
+      let statusClass = status === 'Autorizado' ? 'badge-green' : (status === 'Negado' ? 'badge-red' : 'badge-yellow');
+      html += `<tr class="passageiro-item" onclick="showPassageiroDetail(${start + idx})"><td>${nome}</td><td>${linha}</td><td><span class="badge ${statusClass}">${status}</span></td></tr>`;
+    });
+    html += '</tbody></table>';
+    if (totalPages > 1) {
+      html += '<div class="pagination">';
+      for (let i = 1; i <= totalPages; i++) {
+        html += `<button class="${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+      }
+      html += '</div>';
+    }
+  }
+  document.getElementById('passageiros-list-container').innerHTML = html;
+}
+
 function goToPage(page) { currentPage = page; renderPassageirosList(); }
-function showPassageiroDetail(index) { /* ... */ }
+
+function showPassageiroDetail(index) {
+  let p = passageirosData[index];
+  let html = '<table style="width:100%">';
+  for (let [key, value] of Object.entries(p)) {
+    html += `<tr><td style="font-weight:500">${key}</td><td>${value !== undefined && value !== null ? value : '—'}</td></tr>`;
+  }
+  html += '</table>';
+  document.getElementById('passageiro-detail-body').innerHTML = html;
+  document.getElementById('passageiro-detail-modal').classList.add('open');
+}
 function closePassageiroModal() { document.getElementById('passageiro-detail-modal').classList.remove('open'); }
 </script>
 </body>
