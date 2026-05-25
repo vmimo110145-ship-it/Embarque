@@ -68,11 +68,10 @@ th,td{padding:10px;text-align:left;border-bottom:1px solid var(--gray-200);}
 .status-success{background:var(--green-light);color:var(--green);}
 .status-error{background:var(--red-light);color:var(--red);}
 .drop-zone{border:2px dashed var(--gray-400);padding:40px;text-align:center;cursor:pointer;border-radius:var(--radius-md);}
-.passageiro-item{cursor:pointer;transition:background 0.1s;}
-.passageiro-item:hover{background:var(--gray-50);}
 .pagination{display:flex;gap:5px;justify-content:center;margin-top:15px;flex-wrap:wrap;}
 .pagination button{padding:5px 10px;border:1px solid var(--gray-200);background:white;cursor:pointer;border-radius:4px;}
 .pagination button.active{background:var(--red);color:white;border-color:var(--red);}
+.reset-btn{background:#dc3545;color:white;border:none;margin-top:10px;width:100%;}
 </style>
 </head>
 <body>
@@ -88,11 +87,11 @@ th,td{padding:10px;text-align:left;border-bottom:1px solid var(--gray-200);}
       <div class="role-btn" onclick="selectRole('motorista')"><i class="ti ti-steering-wheel"></i><span>Motorista</span></div>
     </div>
     <div class="login-field"><label>E-mail / Usuário</label><input type="text" id="login-user" value="admin"></div>
-    <div class="login-field"><label>Senha</label><input type="password" id="login-pass" value="mimo2024"></div>
+    <div class="login-field"><label>Senha</label><input type="password" id="login-pass" value="Melissa@2016"></div>
     <button class="btn-login" onclick="doLogin()">Entrar</button>
     <button class="btn-login btn-secondary" onclick="showRegisterLider()" style="background:#6c757d; margin-top:8px">Cadastrar como Líder</button>
+    <button class="btn-login reset-btn" onclick="resetSystem()" style="background:#dc3545; margin-top:8px">Limpar Dados e Reiniciar</button>
     <div class="login-err" id="login-err" style="display:none"></div>
-    <p style="font-size:11px;text-align:center;margin-top:16px;color:gray">Admin: admin/mimo2024 | Motorista: motorista/mimo123</p>
   </div>
 </div>
 
@@ -137,7 +136,7 @@ th,td{padding:10px;text-align:left;border-bottom:1px solid var(--gray-200);}
       <div id="lider-cadastro" style="display:none" class="card"><h3>Novo Colaborador</h3><div class="form-group"><label>Nome completo</label><input type="text" id="colab-nome"></div><div class="form-group"><label>Linha</label><input type="text" id="colab-linha" placeholder="Ex: Linha 001 - Centro"></div><div class="form-group"><label>Endereço de embarque</label><input type="text" id="colab-endereco"></div><div class="form-group"><label>Horário</label><input type="time" id="colab-horario"></div><button class="btn btn-primary" onclick="cadastrarColaborador()">Cadastrar e Solicitar Liberação</button></div>
     </div>
     
-    <!-- Motorista Panel - Consulta de autorizados -->
+    <!-- Motorista Panel -->
     <div id="motorista-panel" style="display:none">
       <div class="card">
         <h3>Consulta de Colaboradores com Embarque Liberado</h3>
@@ -145,20 +144,6 @@ th,td{padding:10px;text-align:left;border-bottom:1px solid var(--gray-200);}
         <div id="motorista-resultado"></div>
       </div>
     </div>
-  </div>
-</div>
-
-<!-- Modal forçado de troca de senha do Admin -->
-<div id="change-password-modal" class="overlay">
-  <div class="modal">
-    <div class="modal-header"><h3>Alteração de Senha Obrigatória</h3></div>
-    <div class="modal-body">
-      <p>Por segurança, você deve alterar sua senha de acesso.</p>
-      <div class="form-group"><label>Nova senha</label><input type="password" id="new-pass" placeholder="Mínimo 6 caracteres"></div>
-      <div class="form-group"><label>Confirmar nova senha</label><input type="password" id="confirm-pass"></div>
-      <div id="pass-msg" class="status-bar" style="display:none"></div>
-    </div>
-    <div class="modal-footer"><button class="btn btn-primary" onclick="changeAdminPassword()">Alterar e Entrar</button></div>
   </div>
 </div>
 
@@ -187,17 +172,60 @@ th,td{padding:10px;text-align:left;border-bottom:1px solid var(--gray-200);}
 
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script>
-// DADOS PERSISTIDOS
-let users = JSON.parse(localStorage.getItem('mimo_users')) || {
-  admin: { password: 'mimo2024', role: 'admin', nome: 'Administrador', status: 'aprovado', firstLogin: true },
-  motorista: { password: 'mimo123', role: 'motorista', nome: 'Motorista Geral', status: 'aprovado', firstLogin: false }
-};
-let liderRequests = JSON.parse(localStorage.getItem('mimo_lider_requests')) || [];
-let colaboradores = JSON.parse(localStorage.getItem('mimo_colaboradores')) || [];
-let solicitacoes = JSON.parse(localStorage.getItem('mimo_solicitacoes')) || [];
-let passageirosData = JSON.parse(localStorage.getItem('mimo_passageiros')) || [];
+// FUNÇÃO PARA RESETAR TOTALMENTE O SISTEMA (LIMPAR LOCALSTORAGE)
+function resetSystem() {
+  if(confirm('ATENÇÃO: Isso apagará todos os dados (usuários, líderes, colaboradores, passageiros). Deseja continuar?')) {
+    localStorage.clear();
+    location.reload();
+  }
+}
+
+// INICIALIZAÇÃO LIMPA DOS DADOS (garante que admin com nova senha e motorista existam)
+function initData() {
+  let users = JSON.parse(localStorage.getItem('mimo_users'));
+  if(!users || !users.admin || users.admin.password !== 'Melissa@2016') {
+    users = {
+      admin: { password: 'Melissa@2016', role: 'admin', nome: 'Administrador', status: 'aprovado' },
+      motorista: { password: 'mimo123', role: 'motorista', nome: 'Motorista Geral', status: 'aprovado' }
+    };
+    localStorage.setItem('mimo_users', JSON.stringify(users));
+  }
+  if(!localStorage.getItem('mimo_lider_requests')) localStorage.setItem('mimo_lider_requests', JSON.stringify([]));
+  if(!localStorage.getItem('mimo_colaboradores')) {
+    let colaboradores = [
+      { id: 1, nome: 'Carlos Silva', linha: 'Linha 101 - Centro', endereco: 'Rua A, 123', horario: '07:30', autorizado: true, liderId: 'lider@mercadolivre.com' },
+      { id: 2, nome: 'Maria Souza', linha: 'Linha 102 - Norte', endereco: 'Av. B, 456', horario: '08:00', autorizado: false, liderId: 'lider@mercadolivre.com' },
+      { id: 3, nome: 'José Oliveira', linha: 'Linha 103 - Sul', endereco: 'Praça C, 789', horario: '09:15', autorizado: true, liderId: 'lider@mercadolivre.com' }
+    ];
+    localStorage.setItem('mimo_colaboradores', JSON.stringify(colaboradores));
+  }
+  if(!localStorage.getItem('mimo_solicitacoes')) {
+    let solicitacoes = [{ id: 100, colaboradorId: 2, linhaSolicitada: 'Linha 102 - Norte', periodo: '20/05/2025', obs: 'Solicitação pendente', status: 'pendente' }];
+    localStorage.setItem('mimo_solicitacoes', JSON.stringify(solicitacoes));
+  }
+  if(!localStorage.getItem('mimo_passageiros')) {
+    let passageiros = [
+      { NOME: 'João Pereira', LINHA: 'Linha 101 - Centro', STATUS: 'Autorizado', ENDERECO: 'Rua das Flores, 100', HORARIO: '07:45' },
+      { NOME: 'Ana Costa', LINHA: 'Linha 102 - Norte', STATUS: 'Pendente', ENDERECO: 'Av. Paulista, 2000', HORARIO: '08:15' }
+    ];
+    localStorage.setItem('mimo_passageiros', JSON.stringify(passageiros));
+  }
+  // garantir que exista um líder exemplo para testes (já aprovado)
+  let usersNow = JSON.parse(localStorage.getItem('mimo_users'));
+  if(!usersNow['lider@mercadolivre.com']) {
+    usersNow['lider@mercadolivre.com'] = { password: 'lider123', role: 'lider', nome: 'Líder Exemplo', status: 'aprovado' };
+    localStorage.setItem('mimo_users', JSON.stringify(usersNow));
+  }
+}
+initData();
+
+// VARIÁVEIS GLOBAIS
+let users = JSON.parse(localStorage.getItem('mimo_users'));
+let liderRequests = JSON.parse(localStorage.getItem('mimo_lider_requests'));
+let colaboradores = JSON.parse(localStorage.getItem('mimo_colaboradores'));
+let solicitacoes = JSON.parse(localStorage.getItem('mimo_solicitacoes'));
+let passageirosData = JSON.parse(localStorage.getItem('mimo_passageiros'));
 let currentUser = null;
-let pendingAdmin = null;
 let currentPage = 1;
 const itemsPerPage = 15;
 
@@ -205,9 +233,18 @@ const itemsPerPage = 15;
 function selectRole(role) {
   document.querySelectorAll('.role-btn').forEach(btn => btn.classList.remove('selected'));
   event.currentTarget.classList.add('selected');
-  if (role === 'admin') { document.getElementById('login-user').value = 'admin'; document.getElementById('login-pass').value = 'mimo2024'; }
-  else if (role === 'lider') { document.getElementById('login-user').value = ''; document.getElementById('login-pass').value = ''; }
-  else { document.getElementById('login-user').value = 'motorista'; document.getElementById('login-pass').value = 'mimo123'; }
+  if (role === 'admin') { 
+    document.getElementById('login-user').value = 'admin'; 
+    document.getElementById('login-pass').value = 'Melissa@2016'; 
+  }
+  else if (role === 'lider') { 
+    document.getElementById('login-user').value = ''; 
+    document.getElementById('login-pass').value = ''; 
+  }
+  else { 
+    document.getElementById('login-user').value = 'motorista'; 
+    document.getElementById('login-pass').value = 'mimo123'; 
+  }
 }
 
 function showRegisterLider() { document.getElementById('register-lider-modal').classList.add('open'); }
@@ -234,44 +271,25 @@ function doLogin() {
   let username = document.getElementById('login-user').value.trim().toLowerCase();
   let password = document.getElementById('login-pass').value;
   let user = users[username];
-  if (user && user.role === 'admin' && user.password === password && user.firstLogin === true) {
-    pendingAdmin = { username, ...user };
-    document.getElementById('change-password-modal').classList.add('open');
-    return;
-  }
+  
   if (user && user.password === password && user.status === 'aprovado') {
     currentUser = { username, ...user };
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('app').style.display = 'block';
     setupDashboard();
+    return;
+  }
+  
+  let pending = liderRequests.find(r => r.email === username && r.status === 'pendente');
+  if (pending && pending.senha === password) {
+    document.getElementById('login-err').innerHTML = 'Seu cadastro ainda não foi aprovado pelo administrador. Aguarde.';
   } else {
-    let pending = liderRequests.find(r => r.email === username && r.status === 'pendente');
-    if (pending && pending.senha === password) document.getElementById('login-err').innerHTML = 'Seu cadastro ainda não foi aprovado pelo administrador.';
-    else document.getElementById('login-err').innerHTML = 'Usuário ou senha inválidos.';
-    document.getElementById('login-err').style.display = 'block';
+    document.getElementById('login-err').innerHTML = 'Usuário ou senha inválidos.';
   }
+  document.getElementById('login-err').style.display = 'block';
 }
 
-function changeAdminPassword() {
-  let newPass = document.getElementById('new-pass').value;
-  let confirmPass = document.getElementById('confirm-pass').value;
-  let msgDiv = document.getElementById('pass-msg');
-  if (newPass.length < 6) { showMsg(msgDiv, 'A senha deve ter no mínimo 6 caracteres', 'error'); return; }
-  if (newPass !== confirmPass) { showMsg(msgDiv, 'As senhas não coincidem', 'error'); return; }
-  if (pendingAdmin) {
-    users['admin'].password = newPass;
-    users['admin'].firstLogin = false;
-    localStorage.setItem('mimo_users', JSON.stringify(users));
-    currentUser = { username: 'admin', ...users['admin'] };
-    document.getElementById('change-password-modal').classList.remove('open');
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('app').style.display = 'block';
-    setupDashboard();
-    pendingAdmin = null;
-  }
-}
-
-function doLogout() { localStorage.clear(); location.reload(); }
+function doLogout() { location.reload(); }
 
 function setupDashboard() {
   let role = currentUser.role;
@@ -285,7 +303,7 @@ function setupDashboard() {
   document.getElementById('motorista-panel').style.display = role === 'motorista' ? 'block' : 'none';
   if (role === 'admin') { renderLiderRequests(); renderLideresAprovados(); renderPassageirosList(); }
   if (role === 'lider') { renderColaboradores(); }
-  if (role === 'motorista') { buscarColaboradorMotorista(); } // carregar todos ao entrar
+  if (role === 'motorista') { buscarColaboradorMotorista(); }
 }
 
 // ========== ADMIN ==========
@@ -305,7 +323,13 @@ function renderLiderRequests() {
   let pending = liderRequests.filter(r => r.status === 'pendente');
   let html = pending.length === 0 ? '<p>Nenhuma solicitação pendente.</p>' : '';
   pending.forEach(req => {
-    html += `<div class="card" style="margin-bottom:8px"><div><strong>${req.nome}</strong> (${req.email})</div><div style="margin-top:8px"><button class="btn btn-success btn-sm" onclick="aprovarLider('${req.email}')">Aprovar</button> <button class="btn btn-sm" style="background:#ccc" onclick="reprovarLider('${req.email}')">Reprovar</button></div></div>`;
+    html += `<div class="card" style="margin-bottom:8px">
+      <div><strong>${req.nome}</strong> (${req.email})</div>
+      <div style="margin-top:8px">
+        <button class="btn btn-success btn-sm" onclick="aprovarLider('${req.email}')">Aprovar</button>
+        <button class="btn btn-sm" style="background:#ccc" onclick="reprovarLider('${req.email}')">Reprovar</button>
+      </div>
+    </div>`;
   });
   document.getElementById('solicitacoes-lider-list').innerHTML = html;
 }
@@ -313,31 +337,40 @@ function renderLiderRequests() {
 function aprovarLider(email) {
   let req = liderRequests.find(r => r.email === email);
   if (req) {
-    users[email] = { password: req.senha, role: 'lider', nome: req.nome, status: 'aprovado', firstLogin: false };
+    users[email] = { password: req.senha, role: 'lider', nome: req.nome, status: 'aprovado' };
     liderRequests = liderRequests.filter(r => r.email !== email);
     localStorage.setItem('mimo_users', JSON.stringify(users));
     localStorage.setItem('mimo_lider_requests', JSON.stringify(liderRequests));
     renderLiderRequests();
     renderLideresAprovados();
-    alert(`Líder ${email} aprovado com sucesso.`);
+    alert(`Líder ${email} aprovado com sucesso! Agora ele pode fazer login.`);
   }
 }
+
 function reprovarLider(email) {
   liderRequests = liderRequests.filter(r => r.email !== email);
   localStorage.setItem('mimo_lider_requests', JSON.stringify(liderRequests));
   renderLiderRequests();
   alert('Solicitação reprovada.');
 }
+
 function renderLideresAprovados() {
-  let lideres = Object.entries(users).filter(([k,v]) => v.role === 'lider');
-  let html = lideres.length === 0 ? '<p>Nenhum líder aprovado.</p>' : '<table><tr><th>E-mail</th><th>Nome</th><th>Ações</th></tr>';
-  lideres.forEach(([email, data]) => { html += `<tr><td>${email}</td><td>${data.nome}</td><td><button class="btn btn-sm" onclick="removerLider('${email}')">Remover</button></td></tr>`; });
+  let lideres = Object.entries(users).filter(([k,v]) => v.role === 'lider' && v.status === 'aprovado');
+  let html = lideres.length === 0 ? '<p>Nenhum líder aprovado.</p>' : '人人户<th>E-mail</th><th>Nome</th><th>Ações</th></tr>';
+  lideres.forEach(([email, data]) => { 
+    html += `<tr><td>${email}</td><td>${data.nome}</td><td><button class="btn btn-sm" onclick="removerLider('${email}')">Remover</button></td></tr>`; 
+  });
   html += '</table>';
   document.getElementById('lideres-list').innerHTML = html;
 }
-function removerLider(email) { delete users[email]; localStorage.setItem('mimo_users', JSON.stringify(users)); renderLideresAprovados(); alert('Líder removido.'); }
 
-// Upload de planilha
+function removerLider(email) { 
+  delete users[email]; 
+  localStorage.setItem('mimo_users', JSON.stringify(users)); 
+  renderLideresAprovados(); 
+  alert('Líder removido.'); 
+}
+
 function handleFile(file) {
   if (!file) return;
   let statusDiv = document.getElementById('upload-status');
@@ -387,7 +420,7 @@ function renderPassageirosList() {
       let linha = p.LINHA || p.linha || p.Linha || '—';
       let status = p.STATUS || p.status || 'Pendente';
       let statusClass = status === 'Autorizado' ? 'badge-green' : (status === 'Negado' ? 'badge-red' : 'badge-yellow');
-      html += `<tr class="passageiro-item" onclick="showPassageiroDetail(${start + idx})"><td>${nome}</td><td>${linha}</td><td><span class="badge ${statusClass}">${status}</span></td></tr>`;
+      html += `<tr class="passageiro-item" onclick="showPassageiroDetail(${start + idx})"><td>${nome}</td><td>${linha}</td><td><span class="badge ${statusClass}">${status}</span></td><tr>`;
     });
     html += '</tbody></table>';
     if (totalPages > 1) {
@@ -458,10 +491,9 @@ function solicitarLiberacao(colabId) {
   renderColaboradores();
 }
 
-// ========== MOTORISTA - CONSULTA DE AUTORIZADOS ==========
+// ========== MOTORISTA ==========
 function buscarColaboradorMotorista() {
   let search = document.getElementById('motorista-search').value.toLowerCase();
-  // Filtra apenas colaboradores com autorizado = true
   let encontrados = colaboradores.filter(c => c.autorizado === true && c.nome.toLowerCase().includes(search));
   let html = '';
   if (encontrados.length === 0) {
@@ -481,29 +513,6 @@ function buscarColaboradorMotorista() {
     `).join('');
   }
   document.getElementById('motorista-resultado').innerHTML = html;
-}
-
-// ========== DADOS DE EXEMPLO ==========
-if (colaboradores.length === 0) {
-  colaboradores.push({ id: 1, nome: 'Carlos Silva', linha: 'Linha 101 - Centro', endereco: 'Rua A, 123', horario: '07:30', autorizado: true, liderId: 'lider@mercadolivre.com' });
-  colaboradores.push({ id: 2, nome: 'Maria Souza', linha: 'Linha 102 - Norte', endereco: 'Av. B, 456', horario: '08:00', autorizado: false, liderId: 'lider@mercadolivre.com' });
-  colaboradores.push({ id: 3, nome: 'José Oliveira', linha: 'Linha 103 - Sul', endereco: 'Praça C, 789', horario: '09:15', autorizado: true, liderId: 'lider@mercadolivre.com' });
-  localStorage.setItem('mimo_colaboradores', JSON.stringify(colaboradores));
-}
-if (solicitacoes.length === 0) {
-  solicitacoes.push({ id: 100, colaboradorId: 2, linhaSolicitada: 'Linha 102 - Norte', periodo: '20/05/2025', obs: 'Solicitação pendente', status: 'pendente' });
-  localStorage.setItem('mimo_solicitacoes', JSON.stringify(solicitacoes));
-}
-if (!users['lider@mercadolivre.com']) {
-  users['lider@mercadolivre.com'] = { password: 'lider123', role: 'lider', nome: 'Líder Exemplo', status: 'aprovado', firstLogin: false };
-  localStorage.setItem('mimo_users', JSON.stringify(users));
-}
-if (passageirosData.length === 0) {
-  passageirosData = [
-    { NOME: 'João Pereira', LINHA: 'Linha 101 - Centro', STATUS: 'Autorizado', ENDERECO: 'Rua das Flores, 100', HORARIO: '07:45' },
-    { NOME: 'Ana Costa', LINHA: 'Linha 102 - Norte', STATUS: 'Pendente', ENDERECO: 'Av. Paulista, 2000', HORARIO: '08:15' }
-  ];
-  localStorage.setItem('mimo_passageiros', JSON.stringify(passageirosData));
 }
 </script>
 </body>
