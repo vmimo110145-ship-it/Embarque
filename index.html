@@ -62,16 +62,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .form-group{margin-bottom:16px;}
 .form-group label{display:block;font-size:12px;margin-bottom:4px;color:var(--gray-500);}
 .form-group input{width:100%;padding:8px 12px;border:1px solid var(--gray-200);border-radius:var(--radius-sm);}
-table{width:100%;border-collapse:collapse;}
-th,td{padding:10px;text-align:left;border-bottom:1px solid var(--gray-200);}
 .status-bar{display:none;padding:10px;border-radius:var(--radius-sm);margin-bottom:16px;}
 .status-success{background:var(--green-light);color:var(--green);}
 .status-error{background:var(--red-light);color:var(--red);}
-.drop-zone{border:2px dashed var(--gray-400);padding:40px;text-align:center;cursor:pointer;border-radius:var(--radius-md);margin-bottom:16px;}
-.pagination{display:flex;gap:5px;justify-content:center;margin-top:15px;flex-wrap:wrap;}
-.pagination button{padding:5px 10px;border:1px solid var(--gray-200);background:white;cursor:pointer;border-radius:4px;}
-.pagination button.active{background:var(--red);color:white;border-color:var(--red);}
+.drop-zone{border:2px dashed var(--gray-400);padding:40px;text-align:center;cursor:pointer;border-radius:var(--radius-md);margin-bottom:16px;transition:all 0.2s;}
+.drop-zone:hover{border-color:var(--red);background:var(--red-light);}
 .reset-btn{background:#dc3545;color:white;border:none;margin-top:10px;width:100%;}
+.suggestions{background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius-sm);max-height:200px;overflow-y:auto;margin-top:5px;position:absolute;z-index:100;width:calc(100% - 40px);}
+.sug-item{padding:9px 14px;cursor:pointer;border-bottom:1px solid var(--gray-100);}
+.sug-item:hover{background:var(--gray-50);}
 </style>
 </head>
 <body>
@@ -110,33 +109,32 @@ th,td{padding:10px;text-align:left;border-bottom:1px solid var(--gray-200);}
     <div id="admin-panel" style="display:none">
       <div class="tabs">
         <button class="tab-btn active" onclick="adminTab('solicitacoesLider')">Solicitações Líder</button>
-        <button class="tab-btn" onclick="adminTab('solicitacoesColab')">Solicitações Colaboradores</button>
+        <button class="tab-btn" onclick="adminTab('solicitacoesColab')">Solicitações Embarque</button>
         <button class="tab-btn" onclick="adminTab('lideres')">Líderes Aprovados</button>
         <button class="tab-btn" onclick="adminTab('upload')">Upload Planilha</button>
-        <button class="tab-btn" onclick="adminTab('passageiros')">Lista de Passageiros</button>
+        <button class="tab-btn" onclick="adminTab('colaboradoresList')">Colaboradores</button>
       </div>
       <div id="admin-solicitacoesLider" class="card"><h3>Cadastros de Líder Aguardando Aprovação</h3><div id="solicitacoes-lider-list"></div></div>
-      <div id="admin-solicitacoesColab" style="display:none" class="card"><h3>Solicitações de Cadastro de Colaboradores</h3><div id="solicitacoes-colab-list"></div></div>
+      <div id="admin-solicitacoesColab" style="display:none" class="card"><h3>Solicitações de Embarque</h3><div id="solicitacoes-colab-list"></div></div>
       <div id="admin-lideres" style="display:none" class="card"><h3>Líderes Autorizados</h3><div id="lideres-list"></div></div>
       <div id="admin-upload" style="display:none" class="card">
-        <h3>Upload de Lista de Passageiros</h3>
-        <div class="drop-zone" onclick="document.getElementById('file-input').click()">📁 Arraste ou clique para enviar arquivo Excel (.xlsx ou .xls)</div>
+        <h3>Upload de Lista de Passageiros e Linhas</h3>
+        <div class="drop-zone" id="dropZone" onclick="document.getElementById('file-input').click()">📁 Arraste ou clique para enviar arquivo Excel (.xlsx ou .xls)<br><small>Abas esperadas: <strong>PASSAGEIROS</strong> e <strong>LINHAS</strong></small></div>
         <input type="file" id="file-input" accept=".xlsx,.xls" style="display:none" onchange="handleFile(this.files[0])">
         <div id="upload-status" class="status-bar" style="display:none"></div>
       </div>
-      <div id="admin-passageiros" style="display:none" class="card">
-        <h3>Passageiros Importados</h3>
-        <div class="search-wrap"><i class="ti ti-search"></i><input type="text" id="admin-pass-search" placeholder="Buscar passageiro..." oninput="renderPassageirosList()"></div>
-        <div id="passageiros-list-container"></div>
+      <div id="admin-colaboradoresList" style="display:none" class="card">
+        <h3>Colaboradores Cadastrados</h3>
+        <div class="search-wrap"><i class="ti ti-search"></i><input type="text" id="admin-colab-search" placeholder="Buscar colaborador..." oninput="renderAdminColaboradores()"></div>
+        <div id="admin-colaboradores-container"></div>
       </div>
     </div>
     
     <!-- Líder Panel -->
     <div id="lider-panel" style="display:none">
-      <div class="tabs"><button class="tab-btn active" onclick="liderTab('colaboradores')">Meus Colaboradores</button><button class="tab-btn" onclick="liderTab('solicitacoes')">Minhas Solicitações</button><button class="tab-btn" onclick="liderTab('cadastro')">Solicitar Colaborador</button></div>
+      <div class="tabs"><button class="tab-btn active" onclick="liderTab('colaboradores')">Colaboradores</button><button class="tab-btn" onclick="liderTab('solicitacoes')">Minhas Solicitações</button></div>
       <div id="lider-colaboradores"><div class="search-wrap"><i class="ti ti-search"></i><input type="text" id="lider-search" placeholder="Buscar colaborador" oninput="renderColaboradores()"></div><div id="colaboradores-list"></div></div>
-      <div id="lider-solicitacoes" style="display:none" class="card"><h3>Solicitações de Cadastro Enviadas</h3><div id="lider-solicitacoes-list"></div></div>
-      <div id="lider-cadastro" style="display:none" class="card"><h3>Solicitar Cadastro de Novo Colaborador</h3><p style="font-size:13px;color:gray;margin-bottom:12px">Preencha os dados do colaborador que não está na lista. O administrador entrará em contato pelo telefone informado.</p><div class="form-group"><label>Nome completo *</label><input type="text" id="solic-nome"></div><div class="form-group"><label>Telefone *</label><input type="tel" id="solic-telefone" placeholder="(00) 00000-0000"></div><div class="form-group"><label>Linha (opcional)</label><input type="text" id="solic-linha"></div><div class="form-group"><label>Endereço (opcional)</label><input type="text" id="solic-endereco"></div><div class="form-group"><label>Horário (opcional)</label><input type="time" id="solic-horario"></div><button class="btn btn-primary" onclick="enviarSolicitacaoColaborador()">Enviar Solicitação</button></div>
+      <div id="lider-solicitacoes" style="display:none" class="card"><h3>Solicitações de Embarque Enviadas</h3><div id="lider-solicitacoes-list"></div></div>
     </div>
     
     <!-- Motorista Panel -->
@@ -147,6 +145,26 @@ th,td{padding:10px;text-align:left;border-bottom:1px solid var(--gray-200);}
         <div id="motorista-resultado"></div>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- Modal Solicitar Liberação (Líder) -->
+<div id="solicitar-liberacao-modal" class="overlay">
+  <div class="modal">
+    <div class="modal-header"><h3>Solicitar Liberação de Embarque</h3></div>
+    <div class="modal-body">
+      <div class="form-group"><label>Colaborador</label><input type="text" id="sol-colab-nome" readonly style="background:#f0f0f0"></div>
+      <div class="form-group"><label>Linha Atual</label><input type="text" id="sol-linha-atual" readonly style="background:#f0f0f0"></div>
+      <div class="form-group"><label>Telefone para Contato</label><input type="text" id="sol-telefone" readonly style="background:#f0f0f0"></div>
+      <div class="form-group" style="position:relative">
+        <label>Selecione a Linha Desejada para Embarque</label>
+        <input type="text" id="sol-busca-linha" placeholder="Digite para buscar linha..." autocomplete="off">
+        <div id="sol-linha-suggestions" class="suggestions" style="display:none"></div>
+      </div>
+      <div id="sol-linha-selecionada" style="display:none; margin-top:8px; padding:8px; background:var(--green-light); border-radius:6px;"><i class="ti ti-circle-check"></i> <span id="sol-linha-nome"></span></div>
+      <div id="sol-msg" class="status-bar" style="display:none"></div>
+    </div>
+    <div class="modal-footer"><button class="btn" onclick="closeSolicitarModal()">Cancelar</button><button class="btn btn-primary" onclick="enviarSolicitacaoEmbarque()">Enviar Solicitação</button></div>
   </div>
 </div>
 
@@ -164,26 +182,16 @@ th,td{padding:10px;text-align:left;border-bottom:1px solid var(--gray-200);}
   </div>
 </div>
 
-<!-- Modal para visualizar detalhes do passageiro (Admin) -->
-<div id="passageiro-detail-modal" class="overlay">
-  <div class="modal">
-    <div class="modal-header"><h3>Detalhes do Passageiro</h3></div>
-    <div class="modal-body" id="passageiro-detail-body"></div>
-    <div class="modal-footer"><button class="btn" onclick="closePassageiroModal()">Fechar</button></div>
-  </div>
-</div>
-
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script>
-// FUNÇÃO PARA RESETAR TOTALMENTE O SISTEMA
+// ==================== RESET E INICIALIZAÇÃO ====================
 function resetSystem() {
-  if(confirm('ATENÇÃO: Isso apagará todos os dados (usuários, líderes, colaboradores, passageiros). Deseja continuar?')) {
+  if(confirm('ATENÇÃO: Isso apagará todos os dados. Deseja continuar?')) {
     localStorage.clear();
     location.reload();
   }
 }
 
-// INICIALIZAÇÃO DOS DADOS
 function initData() {
   let users = JSON.parse(localStorage.getItem('mimo_users'));
   if(!users || !users.admin || users.admin.password !== 'Melissa@2016') {
@@ -194,20 +202,10 @@ function initData() {
     localStorage.setItem('mimo_users', JSON.stringify(users));
   }
   if(!localStorage.getItem('mimo_lider_requests')) localStorage.setItem('mimo_lider_requests', JSON.stringify([]));
-  if(!localStorage.getItem('mimo_solicitacoes_colaborador')) localStorage.setItem('mimo_solicitacoes_colaborador', JSON.stringify([]));
+  if(!localStorage.getItem('mimo_solicitacoes_embarque')) localStorage.setItem('mimo_solicitacoes_embarque', JSON.stringify([]));
+  if(!localStorage.getItem('mimo_linhas')) localStorage.setItem('mimo_linhas', JSON.stringify([]));
   if(!localStorage.getItem('mimo_colaboradores')) {
-    let colaboradores = [
-      { id: 1, nome: 'Carlos Silva', linha: 'Linha 101 - Centro', endereco: 'Rua A, 123', horario: '07:30', autorizado: true, liderId: 'lider@mercadolivre.com', telefone: '(11) 99999-1111' },
-      { id: 2, nome: 'Maria Souza', linha: 'Linha 102 - Norte', endereco: 'Av. B, 456', horario: '08:00', autorizado: false, liderId: 'lider@mercadolivre.com', telefone: '(11) 99999-2222' }
-    ];
-    localStorage.setItem('mimo_colaboradores', JSON.stringify(colaboradores));
-  }
-  if(!localStorage.getItem('mimo_passageiros')) {
-    let passageiros = [
-      { NOME: 'João Pereira', LINHA: 'Linha 101 - Centro', STATUS: 'Autorizado', ENDERECO: 'Rua das Flores, 100', HORARIO: '07:45' },
-      { NOME: 'Ana Costa', LINHA: 'Linha 102 - Norte', STATUS: 'Pendente', ENDERECO: 'Av. Paulista, 2000', HORARIO: '08:15' }
-    ];
-    localStorage.setItem('mimo_passageiros', JSON.stringify(passageiros));
+    localStorage.setItem('mimo_colaboradores', JSON.stringify([]));
   }
   let usersNow = JSON.parse(localStorage.getItem('mimo_users'));
   if(!usersNow['lider@mercadolivre.com']) {
@@ -217,17 +215,16 @@ function initData() {
 }
 initData();
 
-// VARIÁVEIS GLOBAIS
+// ==================== VARIÁVEIS GLOBAIS ====================
 let users = JSON.parse(localStorage.getItem('mimo_users'));
 let liderRequests = JSON.parse(localStorage.getItem('mimo_lider_requests'));
 let colaboradores = JSON.parse(localStorage.getItem('mimo_colaboradores'));
-let solicitacoesColaborador = JSON.parse(localStorage.getItem('mimo_solicitacoes_colaborador')) || [];
-let passageirosData = JSON.parse(localStorage.getItem('mimo_passageiros'));
+let linhasDisponiveis = JSON.parse(localStorage.getItem('mimo_linhas')) || [];
+let solicitacoesEmbarque = JSON.parse(localStorage.getItem('mimo_solicitacoes_embarque')) || [];
 let currentUser = null;
-let currentPage = 1;
-const itemsPerPage = 15;
+let currentSolicitacaoColab = null;
 
-// ========== FUNÇÕES DE TELA ==========
+// ==================== FUNÇÕES DE LOGIN / UI ====================
 function selectRole(role) {
   document.querySelectorAll('.role-btn').forEach(btn => btn.classList.remove('selected'));
   event.currentTarget.classList.add('selected');
@@ -283,35 +280,33 @@ function setupDashboard() {
   document.getElementById('topbar-role-badge').innerHTML = role === 'admin' ? 'Admin' : (role === 'lider' ? 'Líder' : 'Motorista');
   document.getElementById('topbar-role-badge').className = `role-badge role-${role}`;
   document.getElementById('hero-title').innerText = role === 'admin' ? 'Painel Administrativo' : (role === 'lider' ? 'Gestão de Equipe' : 'Consulta de Embarque');
-  document.getElementById('hero-sub').innerText = role === 'admin' ? 'Gerencie solicitações e passageiros' : (role === 'lider' ? 'Solicite cadastro de colaboradores' : 'Busque colaboradores autorizados');
+  document.getElementById('hero-sub').innerText = role === 'admin' ? 'Gerencie solicitações e colaboradores' : (role === 'lider' ? 'Solicite embarque para colaboradores' : 'Busque colaboradores autorizados');
   document.getElementById('admin-panel').style.display = role === 'admin' ? 'block' : 'none';
   document.getElementById('lider-panel').style.display = role === 'lider' ? 'block' : 'none';
   document.getElementById('motorista-panel').style.display = role === 'motorista' ? 'block' : 'none';
-  if (role === 'admin') { renderLiderRequests(); renderSolicitacoesColaborador(); renderLideresAprovados(); renderPassageirosList(); }
-  if (role === 'lider') { renderColaboradores(); renderMinhasSolicitacoes(); }
+  if (role === 'admin') { renderLiderRequests(); renderSolicitacoesEmbarque(); renderLideresAprovados(); renderAdminColaboradores(); }
+  if (role === 'lider') { renderColaboradores(); renderMinhasSolicitacoesEmbarque(); }
   if (role === 'motorista') { buscarColaboradorMotorista(); }
 }
 
-// ========== ADMIN ==========
+// ==================== ADMIN ====================
 function adminTab(tab) {
   document.getElementById('admin-solicitacoesLider').style.display = tab === 'solicitacoesLider' ? 'block' : 'none';
   document.getElementById('admin-solicitacoesColab').style.display = tab === 'solicitacoesColab' ? 'block' : 'none';
   document.getElementById('admin-lideres').style.display = tab === 'lideres' ? 'block' : 'none';
   document.getElementById('admin-upload').style.display = tab === 'upload' ? 'block' : 'none';
-  document.getElementById('admin-passageiros').style.display = tab === 'passageiros' ? 'block' : 'none';
+  document.getElementById('admin-colaboradoresList').style.display = tab === 'colaboradoresList' ? 'block' : 'none';
   document.querySelectorAll('#admin-panel .tab-btn').forEach(btn => btn.classList.remove('active'));
   event.currentTarget.classList.add('active');
-  if (tab === 'solicitacoesColab') renderSolicitacoesColaborador();
+  if (tab === 'solicitacoesColab') renderSolicitacoesEmbarque();
+  if (tab === 'colaboradoresList') renderAdminColaboradores();
 }
 
 function renderLiderRequests() {
   let pending = liderRequests.filter(r => r.status === 'pendente');
   let html = pending.length === 0 ? '<p>Nenhuma solicitação pendente.</p>' : '';
   pending.forEach(req => {
-    html += `<div class="card" style="margin-bottom:8px">
-      <div><strong>${req.nome}</strong> (${req.email})</div>
-      <div style="margin-top:8px"><button class="btn btn-success btn-sm" onclick="aprovarLider('${req.email}')">Aprovar</button> <button class="btn btn-sm" style="background:#ccc" onclick="reprovarLider('${req.email}')">Reprovar</button></div>
-    </div>`;
+    html += `<div class="card" style="margin-bottom:8px"><div><strong>${req.nome}</strong> (${req.email})</div><div style="margin-top:8px"><button class="btn btn-success btn-sm" onclick="aprovarLider('${req.email}')">Aprovar</button> <button class="btn btn-sm" style="background:#ccc" onclick="reprovarLider('${req.email}')">Reprovar</button></div></div>`;
   });
   document.getElementById('solicitacoes-lider-list').innerHTML = html;
 }
@@ -336,145 +331,56 @@ function reprovarLider(email) {
 }
 function renderLideresAprovados() {
   let lideres = Object.entries(users).filter(([k,v]) => v.role === 'lider' && v.status === 'aprovado');
-  let html = lideres.length === 0 ? '<p>Nenhum líder aprovado.</p>' : '<tr><th>E-mail</th><th>Nome</th><th>Ações</th></tr>';
+  let html = lideres.length === 0 ? '<p>Nenhum líder aprovado.</p>' : '<table><th>E-mail</th><th>Nome</th><th>Ações</th></tr>';
   lideres.forEach(([email, data]) => { html += `<tr><td>${email}</td><td>${data.nome}</td><td><button class="btn btn-sm" onclick="removerLider('${email}')">Remover</button></td></tr>`; });
   html += '</table>';
   document.getElementById('lideres-list').innerHTML = html;
 }
 function removerLider(email) { delete users[email]; localStorage.setItem('mimo_users', JSON.stringify(users)); renderLideresAprovados(); alert('Líder removido.'); }
 
-function renderSolicitacoesColaborador() {
-  let pending = solicitacoesColaborador.filter(s => s.status === 'pendente');
+function renderSolicitacoesEmbarque() {
+  let pending = solicitacoesEmbarque.filter(s => s.status === 'pendente');
   let html = pending.length === 0 ? '<p>Nenhuma solicitação pendente.</p>' : '';
   pending.forEach(s => {
+    let colab = colaboradores.find(c => c.id === s.colaboradorId);
     html += `<div class="card" style="margin-bottom:8px">
-      <div><strong>${s.nome}</strong> - Telefone: ${s.telefone}</div>
+      <div><strong>${colab ? colab.nome : 'Colaborador'}</strong> - Telefone: ${colab ? colab.telefone : '—'}</div>
+      <div>Linha atual: ${colab ? colab.linha : '—'}</div>
+      <div>Linha solicitada: ${s.linhaSolicitada}</div>
       <div>Solicitante: ${s.liderId}</div>
-      <div>Linha: ${s.linha || 'Não informada'}</div>
-      <div>Endereço: ${s.endereco || 'Não informado'}</div>
-      <div style="margin-top:8px"><button class="btn btn-success btn-sm" onclick="aprovarSolicitacaoColaborador(${s.id})">Aprovar e Cadastrar</button> <button class="btn btn-sm" style="background:#ccc" onclick="reprovarSolicitacaoColaborador(${s.id})">Reprovar</button></div>
+      <div style="margin-top:8px"><button class="btn btn-success btn-sm" onclick="aprovarEmbarque(${s.id})">Aprovar</button> <button class="btn btn-sm" style="background:#ccc" onclick="reprovarEmbarque(${s.id})">Reprovar</button></div>
     </div>`;
   });
   document.getElementById('solicitacoes-colab-list').innerHTML = html;
 }
 
-function aprovarSolicitacaoColaborador(id) {
-  let sol = solicitacoesColaborador.find(s => s.id === id);
+function aprovarEmbarque(id) {
+  let sol = solicitacoesEmbarque.find(s => s.id === id);
   if (sol) {
-    let novoId = Date.now();
-    let novoColab = {
-      id: novoId,
-      nome: sol.nome,
-      telefone: sol.telefone,
-      linha: sol.linha || '',
-      endereco: sol.endereco || '',
-      horario: sol.horario || '',
-      autorizado: true,
-      liderId: sol.liderId
-    };
-    colaboradores.push(novoColab);
     sol.status = 'aprovado';
-    localStorage.setItem('mimo_colaboradores', JSON.stringify(colaboradores));
-    localStorage.setItem('mimo_solicitacoes_colaborador', JSON.stringify(solicitacoesColaborador));
-    renderSolicitacoesColaborador();
-    alert(`Colaborador ${sol.nome} cadastrado com sucesso! O líder já pode visualizá-lo.`);
+    let colab = colaboradores.find(c => c.id === sol.colaboradorId);
+    if (colab) {
+      colab.autorizado = true;
+      localStorage.setItem('mimo_colaboradores', JSON.stringify(colaboradores));
+    }
+    localStorage.setItem('mimo_solicitacoes_embarque', JSON.stringify(solicitacoesEmbarque));
+    renderSolicitacoesEmbarque();
+    renderAdminColaboradores();
+    if (currentUser && currentUser.role === 'lider') renderColaboradores();
+    alert('Embarque autorizado com sucesso!');
   }
 }
-function reprovarSolicitacaoColaborador(id) {
-  let sol = solicitacoesColaborador.find(s => s.id === id);
+function reprovarEmbarque(id) {
+  let sol = solicitacoesEmbarque.find(s => s.id === id);
   if (sol) {
     sol.status = 'reprovado';
-    localStorage.setItem('mimo_solicitacoes_colaborador', JSON.stringify(solicitacoesColaborador));
-    renderSolicitacoesColaborador();
+    localStorage.setItem('mimo_solicitacoes_embarque', JSON.stringify(solicitacoesEmbarque));
+    renderSolicitacoesEmbarque();
     alert('Solicitação reprovada.');
   }
 }
 
-// ========== LÍDER ==========
-function liderTab(tab) {
-  document.getElementById('lider-colaboradores').style.display = tab === 'colaboradores' ? 'block' : 'none';
-  document.getElementById('lider-solicitacoes').style.display = tab === 'solicitacoes' ? 'block' : 'none';
-  document.getElementById('lider-cadastro').style.display = tab === 'cadastro' ? 'block' : 'none';
-  if (tab === 'colaboradores') renderColaboradores();
-  if (tab === 'solicitacoes') renderMinhasSolicitacoes();
-}
-
-function renderColaboradores() {
-  let search = document.getElementById('lider-search')?.value.toLowerCase() || '';
-  let meusColabs = colaboradores.filter(c => c.liderId === currentUser.username);
-  let filtered = meusColabs.filter(c => c.nome.toLowerCase().includes(search));
-  let html = filtered.map(c => `<div class="pass-card"><div class="avatar">${c.nome.charAt(0)}</div><div><strong>${c.nome}</strong><br><small>Tel: ${c.telefone || '—'}</small><br><small>Linha: ${c.linha}</small><br><small>Status: ${c.autorizado ? '<span class="badge-green">Autorizado</span>' : '<span class="badge-yellow">Pendente</span>'}</small></div><button class="btn btn-sm" onclick="solicitarLiberacao(${c.id})">Solicitar Liberação</button></div>`).join('');
-  document.getElementById('colaboradores-list').innerHTML = html || '<p>Nenhum colaborador.</p>';
-}
-
-function solicitarLiberacao(colabId) {
-  alert(`Solicitação de liberação para o colaborador enviada ao administrador.`);
-}
-
-function renderMinhasSolicitacoes() {
-  let minhas = solicitacoesColaborador.filter(s => s.liderId === currentUser.username);
-  let html = minhas.length === 0 ? '<p>Nenhuma solicitação enviada.</p>' : '';
-  minhas.forEach(s => {
-    let statusText = s.status === 'pendente' ? 'Pendente' : (s.status === 'aprovado' ? 'Aprovado ✓' : 'Reprovado ✗');
-    let statusClass = s.status === 'pendente' ? 'badge-yellow' : (s.status === 'aprovado' ? 'badge-green' : 'badge-red');
-    html += `<div class="card" style="margin-bottom:8px"><div><strong>${s.nome}</strong> - ${s.telefone}</div><div><span class="badge ${statusClass}">${statusText}</span></div></div>`;
-  });
-  document.getElementById('lider-solicitacoes-list').innerHTML = html;
-}
-
-function enviarSolicitacaoColaborador() {
-  let nome = document.getElementById('solic-nome').value.trim();
-  let telefone = document.getElementById('solic-telefone').value.trim();
-  if (!nome || !telefone) { alert('Nome e telefone são obrigatórios'); return; }
-  let linha = document.getElementById('solic-linha').value;
-  let endereco = document.getElementById('solic-endereco').value;
-  let horario = document.getElementById('solic-horario').value;
-  let novaSol = {
-    id: Date.now(),
-    nome,
-    telefone,
-    linha,
-    endereco,
-    horario,
-    liderId: currentUser.username,
-    status: 'pendente'
-  };
-  solicitacoesColaborador.push(novaSol);
-  localStorage.setItem('mimo_solicitacoes_colaborador', JSON.stringify(solicitacoesColaborador));
-  alert('Solicitação enviada ao administrador para análise. Ele entrará em contato pelo telefone informado.');
-  document.getElementById('solic-nome').value = '';
-  document.getElementById('solic-telefone').value = '';
-  document.getElementById('solic-linha').value = '';
-  document.getElementById('solic-endereco').value = '';
-  document.getElementById('solic-horario').value = '';
-  liderTab('solicitacoes');
-}
-
-// ========== MOTORISTA ==========
-function buscarColaboradorMotorista() {
-  let search = document.getElementById('motorista-search').value.toLowerCase();
-  let encontrados = colaboradores.filter(c => c.autorizado === true && c.nome.toLowerCase().includes(search));
-  let html = '';
-  if (encontrados.length === 0) {
-    html = '<div class="card" style="text-align:center; color:var(--gray-400)"><i class="ti ti-mood-empty" style="font-size:36px"></i><p>Nenhum colaborador autorizado encontrado.</p></div>';
-  } else {
-    html = encontrados.map(c => `
-      <div class="pass-card">
-        <div class="avatar">${c.nome.charAt(0)}</div>
-        <div style="flex:1">
-          <strong>${c.nome}</strong><br>
-          <small><i class="ti ti-bus" style="font-size:12px"></i> Linha: ${c.linha}</small><br>
-          <small><i class="ti ti-map-pin" style="font-size:12px"></i> Endereço: ${c.endereco || 'Não informado'}</small><br>
-          <small><i class="ti ti-clock" style="font-size:12px"></i> Horário: ${c.horario || 'Não informado'}</small>
-        </div>
-        <div><span class="badge badge-green"><i class="ti ti-circle-check"></i> Autorizado</span></div>
-      </div>
-    `).join('');
-  }
-  document.getElementById('motorista-resultado').innerHTML = html;
-}
-
-// ========== ADMIN: UPLOAD DE ARQUIVO EXCEL ==========
+// ==================== UPLOAD DE PLANILHA (MAPEAMENTO ROBUSTO) ====================
 function handleFile(file) {
   if (!file) return;
   let statusDiv = document.getElementById('upload-status');
@@ -487,73 +393,263 @@ function handleFile(file) {
     try {
       let data = new Uint8Array(e.target.result);
       let workbook = XLSX.read(data, { type: 'array' });
-      let sheetName = workbook.SheetNames[0];
-      let sheet = workbook.Sheets[sheetName];
-      let rows = XLSX.utils.sheet_to_json(sheet);
-      if (!rows || rows.length === 0) throw new Error('Nenhum dado encontrado na planilha.');
-      passageirosData = rows;
-      localStorage.setItem('mimo_passageiros', JSON.stringify(passageirosData));
-      statusDiv.innerHTML = `✅ ${rows.length} passageiros importados com sucesso!`;
-      renderPassageirosList();
-      setTimeout(() => statusDiv.style.display = 'none', 3000);
+      
+      let passageirosSheet = null;
+      let linhasSheet = null;
+      
+      // Procura as abas
+      for (let sheetName of workbook.SheetNames) {
+        let upper = sheetName.toUpperCase();
+        if (upper === 'PASSAGEIROS') passageirosSheet = workbook.Sheets[sheetName];
+        if (upper === 'LINHAS') linhasSheet = workbook.Sheets[sheetName];
+      }
+      if (!passageirosSheet) passageirosSheet = workbook.Sheets[workbook.SheetNames[0]];
+      
+      let rows = XLSX.utils.sheet_to_json(passageirosSheet, { defval: '', raw: false });
+      if (!rows || rows.length === 0) throw new Error('Nenhum dado encontrado.');
+      
+      // DEBUG: Mostra cabeçalhos
+      let headers = Object.keys(rows[0]);
+      console.log('Cabeçalhos encontrados:', headers);
+      alert('Cabeçalhos detectados:\n' + headers.join('\n'));
+      
+      // Função flexível para extrair valor
+      function getField(row, variations) {
+        for (let v of variations) {
+          if (row.hasOwnProperty(v) && row[v] !== undefined && row[v] !== null && row[v].toString().trim() !== '') {
+            return row[v].toString().trim();
+          }
+        }
+        // Caso não encontre, busca em qualquer chave que contenha a variação (case-insensitive)
+        for (let key of Object.keys(row)) {
+          for (let v of variations) {
+            if (key.toLowerCase() === v.toLowerCase()) {
+              let val = row[key];
+              if (val !== undefined && val !== null && val.toString().trim() !== '') {
+                return val.toString().trim();
+              }
+            }
+          }
+        }
+        return '';
+      }
+      
+      let novosColaboradores = [];
+      let linhasExtraidas = new Set();
+      
+      for (let row of rows) {
+        let nome = getField(row, ['Nome', 'NOME', 'nome']);
+        if (!nome) continue;
+        
+        // Mapeamento específico para "Linha Vinculada" (espaço e acento)
+        let linha = getField(row, [
+          'Linha Vinculada', 'LINHA VINCULADA', 'linha vinculada',
+          'Linha', 'LINHA', 'linha',
+          'LinhaVinculada', 'linhaVinculada'
+        ]);
+        
+        let turno = getField(row, ['Turno', 'TURNO', 'turno']);
+        let email = getField(row, ['E-mail', 'EMAIL', 'email', 'Email']);
+        let celular = getField(row, ['Celular', 'CELULAR', 'celular', 'Telefone', 'TELEFONE']);
+        let cpf = getField(row, ['Cpf', 'CPF', 'cpf']);
+        let horaParada = getField(row, ['Hora Parada', 'HORA PARADA', 'hora parada', 'Horário', 'HORARIO']);
+        let pontoReferencia = getField(row, ['Ponto de Referencia', 'PONTO DE REFERENCIA', 'ponto de referencia', 'Endereço', 'ENDERECO']);
+        let distancia = getField(row, ['Dist. (m)', 'DIST. (M)', 'dist', 'Distancia', 'DISTANCIA']);
+        
+        if (linha) linhasExtraidas.add(linha);
+        
+        let id = Date.now() + Math.random() * 1000;
+        novosColaboradores.push({
+          id: id,
+          nome: nome,
+          turno: turno,
+          email: email,
+          telefone: celular,
+          cpf: cpf,
+          linha: linha,
+          horario: horaParada,
+          endereco: pontoReferencia,
+          distancia: distancia,
+          autorizado: false
+        });
+      }
+      
+      if (novosColaboradores.length === 0) throw new Error('Nenhum registro com nome encontrado.');
+      
+      // Processa aba LINHAS para opções de linha desejada
+      let novasLinhas = [];
+      if (linhasSheet) {
+        let linhasRows = XLSX.utils.sheet_to_json(linhasSheet, { header: 1, defval: '' });
+        for (let row of linhasRows) {
+          if (row && row[0] && row[0].toString().trim()) {
+            novasLinhas.push(row[0].toString().trim());
+          }
+        }
+      }
+      // Se não encontrou linhas na aba LINHAS, usa as linhas extraídas dos colaboradores
+      if (novasLinhas.length === 0 && linhasExtraidas.size > 0) {
+        novasLinhas = Array.from(linhasExtraidas);
+      }
+      // Fallback
+      if (novasLinhas.length === 0) {
+        novasLinhas = ['Linha 101 - Centro', 'Linha 102 - Norte', 'Linha 103 - Sul'];
+      }
+      
+      colaboradores = novosColaboradores;
+      linhasDisponiveis = novasLinhas;
+      localStorage.setItem('mimo_colaboradores', JSON.stringify(colaboradores));
+      localStorage.setItem('mimo_linhas', JSON.stringify(linhasDisponiveis));
+      
+      console.log('Primeiro colaborador importado:', colaboradores[0]);
+      statusDiv.innerHTML = `✅ ${colaboradores.length} colaboradores e ${linhasDisponiveis.length} linhas importados!`;
+      renderAdminColaboradores();
+      if (currentUser && currentUser.role === 'lider') renderColaboradores();
+      if (currentUser && currentUser.role === 'motorista') buscarColaboradorMotorista();
+      setTimeout(() => statusDiv.style.display = 'none', 4000);
     } catch(err) {
       statusDiv.className = 'status-bar status-error';
-      statusDiv.innerHTML = '❌ Erro ao processar arquivo: ' + err.message;
+      statusDiv.innerHTML = '❌ Erro: ' + err.message;
       console.error(err);
     }
   };
   reader.readAsArrayBuffer(file);
 }
 
-function renderPassageirosList() {
-  let search = document.getElementById('admin-pass-search')?.value.toLowerCase() || '';
-  let filtered = passageirosData.filter(p => {
-    let nome = (p.NOME || p.nome || p.Nome || '').toLowerCase();
-    let linha = (p.LINHA || p.linha || p.Linha || '').toLowerCase();
-    return nome.includes(search) || linha.includes(search);
-  });
-  let totalPages = Math.ceil(filtered.length / itemsPerPage);
-  if (currentPage > totalPages) currentPage = 1;
-  let start = (currentPage - 1) * itemsPerPage;
-  let end = start + itemsPerPage;
-  let pageItems = filtered.slice(start, end);
+function renderAdminColaboradores() {
+  let search = document.getElementById('admin-colab-search')?.value.toLowerCase() || '';
+  let filtered = colaboradores.filter(c => c.nome.toLowerCase().includes(search));
+  let html = filtered.map(c => `<div class="pass-card"><div class="avatar">${c.nome.charAt(0)}</div><div><strong>${c.nome}</strong><br>Tel: ${c.telefone || '—'}<br>Linha: ${c.linha || '—'}<br>Endereço: ${c.endereco || '—'}<br>Status: ${c.autorizado ? '<span class="badge-green">Autorizado</span>' : '<span class="badge-yellow">Pendente</span>'}</div><button class="btn btn-sm" onclick="toggleAutorizacao(${c.id})">${c.autorizado ? 'Revogar' : 'Autorizar'}</button></div>`).join('');
+  document.getElementById('admin-colaboradores-container').innerHTML = html || '<p>Nenhum colaborador encontrado. Faça upload da planilha.</p>';
+}
+function toggleAutorizacao(id) {
+  let colab = colaboradores.find(c => c.id === id);
+  if (colab) { colab.autorizado = !colab.autorizado; localStorage.setItem('mimo_colaboradores', JSON.stringify(colaboradores)); renderAdminColaboradores(); if (currentUser && currentUser.role === 'lider') renderColaboradores(); if (currentUser && currentUser.role === 'motorista') buscarColaboradorMotorista(); alert(`Colaborador ${colab.nome} ${colab.autorizado ? 'autorizado' : 'desautorizado'}.`); }
+}
+
+// ==================== LÍDER ====================
+function liderTab(tab) {
+  document.getElementById('lider-colaboradores').style.display = tab === 'colaboradores' ? 'block' : 'none';
+  document.getElementById('lider-solicitacoes').style.display = tab === 'solicitacoes' ? 'block' : 'none';
+  if (tab === 'colaboradores') renderColaboradores();
+  if (tab === 'solicitacoes') renderMinhasSolicitacoesEmbarque();
+}
+
+function renderColaboradores() {
+  let search = document.getElementById('lider-search')?.value.toLowerCase() || '';
+  let filtered = colaboradores.filter(c => c.nome.toLowerCase().includes(search));
+  let html = filtered.map(c => `<div class="pass-card"><div class="avatar">${c.nome.charAt(0)}</div><div><strong>${c.nome}</strong><br><small>Tel: ${c.telefone || '—'}</small><br><small>Linha: ${c.linha || '—'}</small><br><small>Status: ${c.autorizado ? '<span class="badge-green">Autorizado</span>' : '<span class="badge-yellow">Pendente</span>'}</small></div><button class="btn btn-sm" onclick="abrirModalSolicitar(${c.id})">Solicitar Liberação</button></div>`).join('');
+  document.getElementById('colaboradores-list').innerHTML = html || '<p>Nenhum colaborador encontrado. Faça upload da planilha no admin.</p>';
+}
+
+function abrirModalSolicitar(colabId) {
+  let colab = colaboradores.find(c => c.id === colabId);
+  if (!colab) return;
+  currentSolicitacaoColab = colab;
+  document.getElementById('sol-colab-nome').value = colab.nome;
+  // Exibe a linha atual
+  document.getElementById('sol-linha-atual').value = (colab.linha && colab.linha !== '') ? colab.linha : 'Não informada';
+  document.getElementById('sol-telefone').value = colab.telefone || 'Não informado';
+  document.getElementById('sol-busca-linha').value = '';
+  document.getElementById('sol-linha-selecionada').style.display = 'none';
+  document.getElementById('solicitar-liberacao-modal').classList.add('open');
   
-  let html = '';
-  if (pageItems.length === 0) html = '<p>Nenhum passageiro encontrado.</p>';
-  else {
-    html = '<table style="width:100%"><thead><tr><th>Nome</th><th>Linha</th><th>Status</th></tr></thead><tbody>';
-    pageItems.forEach((p, idx) => {
-      let nome = p.NOME || p.nome || p.Nome || '—';
-      let linha = p.LINHA || p.linha || p.Linha || '—';
-      let status = p.STATUS || p.status || 'Pendente';
-      let statusClass = status === 'Autorizado' ? 'badge-green' : (status === 'Negado' ? 'badge-red' : 'badge-yellow');
-      html += `<tr class="passageiro-item" onclick="showPassageiroDetail(${start + idx})"><td>${nome}</td><td>${linha}</td><td><span class="badge ${statusClass}">${status}</span></td></tr>`;
-    });
-    html += '</tbody></table>';
-    if (totalPages > 1) {
-      html += '<div class="pagination">';
-      for (let i = 1; i <= totalPages; i++) {
-        html += `<button class="${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
-      }
-      html += '</div>';
+  let inputBusca = document.getElementById('sol-busca-linha');
+  let suggestionsDiv = document.getElementById('sol-linha-suggestions');
+  
+  inputBusca.oninput = function() {
+    let q = this.value.toLowerCase();
+    if (!q) { suggestionsDiv.style.display = 'none'; return; }
+    let matches = linhasDisponiveis.filter(l => l.toLowerCase().includes(q)).slice(0, 8);
+    if (matches.length === 0) {
+      suggestionsDiv.style.display = 'none';
+      return;
     }
-  }
-  document.getElementById('passageiros-list-container').innerHTML = html;
+    suggestionsDiv.innerHTML = matches.map(l => `<div class="sug-item" onclick="selecionarLinhaSolicitacao('${l.replace(/'/g, "\\'")}')">${l}</div>`).join('');
+    suggestionsDiv.style.display = 'block';
+  };
+  
+  let closeHandler = function(e) {
+    if (!inputBusca.contains(e.target) && !suggestionsDiv.contains(e.target)) {
+      suggestionsDiv.style.display = 'none';
+      document.removeEventListener('click', closeHandler);
+    }
+  };
+  setTimeout(() => document.addEventListener('click', closeHandler), 100);
 }
 
-function goToPage(page) { currentPage = page; renderPassageirosList(); }
-
-function showPassageiroDetail(index) {
-  let p = passageirosData[index];
-  let html = '<table style="width:100%">';
-  for (let [key, value] of Object.entries(p)) {
-    html += `<tr><td style="font-weight:500">${key}</td><td>${value !== undefined && value !== null ? value : '—'}</td></tr>`;
-  }
-  html += '</table>';
-  document.getElementById('passageiro-detail-body').innerHTML = html;
-  document.getElementById('passageiro-detail-modal').classList.add('open');
+function selecionarLinhaSolicitacao(linha) {
+  document.getElementById('sol-busca-linha').value = linha;
+  document.getElementById('sol-linha-suggestions').style.display = 'none';
+  document.getElementById('sol-linha-nome').innerText = linha;
+  document.getElementById('sol-linha-selecionada').style.display = 'block';
 }
-function closePassageiroModal() { document.getElementById('passageiro-detail-modal').classList.remove('open'); }
+
+function enviarSolicitacaoEmbarque() {
+  let linhaSelecionada = document.getElementById('sol-busca-linha').value.trim();
+  if (!linhaSelecionada) {
+    let msgDiv = document.getElementById('sol-msg');
+    msgDiv.innerHTML = 'Selecione uma linha para embarque.';
+    msgDiv.className = 'status-bar status-error';
+    msgDiv.style.display = 'block';
+    setTimeout(() => msgDiv.style.display = 'none', 3000);
+    return;
+  }
+  if (!currentSolicitacaoColab) return;
+  let novaSol = {
+    id: Date.now(),
+    colaboradorId: currentSolicitacaoColab.id,
+    linhaSolicitada: linhaSelecionada,
+    liderId: currentUser.username,
+    status: 'pendente',
+    data: new Date().toISOString()
+  };
+  solicitacoesEmbarque.push(novaSol);
+  localStorage.setItem('mimo_solicitacoes_embarque', JSON.stringify(solicitacoesEmbarque));
+  document.getElementById('solicitar-liberacao-modal').classList.remove('open');
+  alert('Solicitação de embarque enviada ao administrador.');
+  renderMinhasSolicitacoesEmbarque();
+}
+
+function renderMinhasSolicitacoesEmbarque() {
+  let minhas = solicitacoesEmbarque.filter(s => s.liderId === currentUser.username);
+  let html = minhas.length === 0 ? '<p>Nenhuma solicitação enviada.</p>' : '';
+  minhas.forEach(s => {
+    let colab = colaboradores.find(c => c.id === s.colaboradorId);
+    let statusText = s.status === 'pendente' ? 'Pendente' : (s.status === 'aprovado' ? 'Aprovado ✓' : 'Reprovado ✗');
+    let statusClass = s.status === 'pendente' ? 'badge-yellow' : (s.status === 'aprovado' ? 'badge-green' : 'badge-red');
+    html += `<div class="card" style="margin-bottom:8px"><div><strong>${colab ? colab.nome : 'Colaborador'}</strong></div><div>Linha solicitada: ${s.linhaSolicitada}</div><div><span class="badge ${statusClass}">${statusText}</span></div></div>`;
+  });
+  document.getElementById('lider-solicitacoes-list').innerHTML = html;
+}
+
+function closeSolicitarModal() {
+  document.getElementById('solicitar-liberacao-modal').classList.remove('open');
+  currentSolicitacaoColab = null;
+}
+
+// ==================== MOTORISTA ====================
+function buscarColaboradorMotorista() {
+  let search = document.getElementById('motorista-search').value.toLowerCase();
+  let encontrados = colaboradores.filter(c => c.autorizado === true && c.nome.toLowerCase().includes(search));
+  let html = '';
+  if (encontrados.length === 0) {
+    html = '<div class="card" style="text-align:center; color:var(--gray-400)"><i class="ti ti-mood-empty" style="font-size:36px"></i><p>Nenhum colaborador autorizado encontrado.</p></div>';
+  } else {
+    html = encontrados.map(c => `
+      <div class="pass-card">
+        <div class="avatar">${c.nome.charAt(0)}</div>
+        <div style="flex:1">
+          <strong>${c.nome}</strong><br>
+          <small><i class="ti ti-bus" style="font-size:12px"></i> Linha: ${c.linha || '—'}</small><br>
+          <small><i class="ti ti-map-pin" style="font-size:12px"></i> Endereço: ${c.endereco || 'Não informado'}</small><br>
+          <small><i class="ti ti-clock" style="font-size:12px"></i> Horário: ${c.horario || 'Não informado'}</small>
+        </div>
+        <div><span class="badge badge-green"><i class="ti ti-circle-check"></i> Autorizado</span></div>
+      </div>
+    `).join('');
+  }
+  document.getElementById('motorista-resultado').innerHTML = html;
+}
 </script>
 </body>
 </html>
