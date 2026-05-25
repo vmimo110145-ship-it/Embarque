@@ -3,72 +3,72 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes"/>
-<title>Viação MIMO — Gestão de Embarque</title>
+<title>Viação MIMO — Gestão de Embarque (Mobile)</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css"/>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
-:root{--red:#C0392B;--red-dark:#96281B;--red-light:#fdedec;--green:#1e8449;--green-light:#eafaf1;--blue:#1a56db;--blue-light:#ebf5ff;--gray-50:#f9fafb;--gray-100:#f3f4f6;--gray-200:#e5e7eb;--gray-400:#9ca3af;--gray-500:#6b7280;--gray-900:#111827;--radius-sm:6px;--radius-md:10px;--radius-lg:14px;}
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f2f5;color:var(--gray-900);}
+body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f2f5;color:#111827;}
 #login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a1a1a 0%,#2d1010 100%);padding:16px;}
-.login-card{background:#fff;border-radius:var(--radius-lg);padding:28px 24px;width:100%;max-width:400px;box-shadow:0 8px 32px rgba(0,0,0,0.18);}
+.login-card{background:#fff;border-radius:14px;padding:28px 24px;width:100%;max-width:400px;box-shadow:0 8px 32px rgba(0,0,0,0.18);}
 .logo-text{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:24px;}
-.logo-text i{font-size:42px;color:var(--red);}
+.logo-text i{font-size:42px;color:#C0392B;}
 .logo-text span{font-size:26px;font-weight:700;background:linear-gradient(135deg,#C0392B,#E74C3C);-webkit-background-clip:text;background-clip:text;color:transparent;}
-.topbar-logo{display:flex;align-items:center;gap:8px;background:transparent;}
-.topbar-logo i{font-size:22px;color:var(--red);}
+.topbar-logo{display:flex;align-items:center;gap:8px;}
+.topbar-logo i{font-size:22px;color:#C0392B;}
 .topbar-logo span{font-size:14px;font-weight:600;color:#fff;}
 .role-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:10px;margin-bottom:24px;}
-.role-btn{padding:10px 4px;border-radius:var(--radius-md);border:1.5px solid var(--gray-200);background:var(--gray-50);cursor:pointer;text-align:center;}
-.role-btn.selected{border-color:var(--red);background:var(--red-light);}
+.role-btn{padding:10px 4px;border-radius:10px;border:1.5px solid #e5e7eb;background:#f9fafb;cursor:pointer;text-align:center;}
+.role-btn.selected{border-color:#C0392B;background:#fdedec;}
 .role-btn i{font-size:20px;display:block;margin-bottom:4px;}
 .login-field{margin-bottom:14px;}
-.login-field input{width:100%;padding:12px;font-size:16px;border:1px solid var(--gray-200);border-radius:var(--radius-sm);}
-.btn-login{width:100%;padding:12px;background:var(--red);color:#fff;border:none;border-radius:var(--radius-sm);cursor:pointer;font-weight:600;font-size:16px;}
+.login-field input{width:100%;padding:12px;font-size:16px;border:1px solid #e5e7eb;border-radius:6px;}
+.btn-login{width:100%;padding:12px;background:#C0392B;color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:600;font-size:16px;}
 .btn-secondary{background:#6c757d;margin-top:8px;}
 .topbar{background:#1a1a1a;padding:0 16px;height:56px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;}
 .topbar-title{font-size:13px;color:rgba(255,255,255,0.85);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.role-badge{font-size:11px;padding:4px 8px;border-radius:20px;white-space:nowrap;}
+.role-badge{font-size:11px;padding:4px 8px;border-radius:20px;}
 .role-admin{background:rgba(192,57,43,0.25);color:#f1948a;}
 .role-lider{background:rgba(26,86,219,0.25);color:#93c5fd;}
 .role-motorista{background:rgba(30,132,67,0.25);color:#82e0aa;}
 .btn-logout{background:rgba(255,255,255,0.08);border:none;color:#fff;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;}
 .main{max-width:800px;margin:0 auto;padding:16px;}
-.card{background:#fff;border-radius:var(--radius-lg);padding:16px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,0.08);}
-.hero{position:relative;height:120px;background:#2c3e50;border-radius:var(--radius-lg);margin-bottom:16px;overflow:hidden;}
+.card{background:#fff;border-radius:14px;padding:16px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,0.08);}
+.hero{position:relative;height:120px;background:#2c3e50;border-radius:14px;margin-bottom:16px;overflow:hidden;}
 .hero-overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,0.7),transparent);display:flex;align-items:center;padding:0 20px;}
 .hero-text p:first-child{font-size:16px;font-weight:600;color:#fff;}
 .badge{font-size:10px;padding:2px 8px;border-radius:20px;display:inline-flex;align-items:center;gap:4px;}
-.badge-green{background:var(--green-light);color:var(--green);}
-.badge-red{background:var(--red-light);color:var(--red);}
+.badge-green{background:#eafaf1;color:#1e8449;}
+.badge-red{background:#fdedec;color:#C0392B;}
 .badge-yellow{background:#fef9e7;color:#7d6608;}
-.btn{padding:6px 12px;border-radius:var(--radius-sm);border:1px solid var(--gray-200);cursor:pointer;background:transparent;font-size:12px;}
-.btn-primary{background:var(--red);color:#fff;border-color:var(--red);}
-.btn-success{background:var(--green);color:#fff;}
+.btn{padding:6px 12px;border-radius:6px;border:1px solid #e5e7eb;cursor:pointer;background:transparent;font-size:12px;}
+.btn-primary{background:#C0392B;color:#fff;border-color:#C0392B;}
+.btn-success{background:#1e8449;color:#fff;}
 .btn-sm{padding:4px 8px;font-size:11px;}
 .search-wrap{position:relative;margin-bottom:16px;}
-.search-wrap input{width:100%;padding:10px 12px 10px 36px;font-size:14px;border:1px solid var(--gray-200);border-radius:var(--radius-sm);}
+.search-wrap input{width:100%;padding:10px 12px 10px 36px;font-size:14px;border:1px solid #e5e7eb;border-radius:6px;}
 .search-wrap i{position:absolute;left:12px;top:50%;transform:translateY(-50%);}
-.pass-card{background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius-md);padding:12px;margin-bottom:8px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
-.avatar{width:40px;height:40px;border-radius:50%;background:var(--red-light);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:14px;color:var(--red);flex-shrink:0;}
+.pass-card{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:12px;margin-bottom:8px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.avatar{width:40px;height:40px;border-radius:50%;background:#fdedec;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:14px;color:#C0392B;flex-shrink:0;}
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;align-items:center;justify-content:center;padding:16px;}
 .overlay.open{display:flex;}
-.modal{background:#fff;border-radius:var(--radius-lg);width:100%;max-width:500px;max-height:90vh;overflow-y:auto;}
-.modal-header{padding:14px 16px;border-bottom:1px solid var(--gray-200);}
+.modal{background:#fff;border-radius:14px;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;}
+.modal-header{padding:14px 16px;border-bottom:1px solid #e5e7eb;}
 .modal-body{padding:16px;}
 .modal-footer{padding:12px 16px;display:flex;gap:8px;justify-content:flex-end;}
-.tabs{display:flex;gap:6px;margin-bottom:16px;background:var(--gray-100);padding:4px;border-radius:var(--radius-md);flex-wrap:wrap;}
-.tab-btn{flex:1;padding:8px;font-size:12px;border:none;background:transparent;border-radius:var(--radius-sm);cursor:pointer;}
+.tabs{display:flex;gap:6px;margin-bottom:16px;background:#f3f4f6;padding:4px;border-radius:10px;flex-wrap:wrap;}
+.tab-btn{flex:1;padding:8px;font-size:12px;border:none;background:transparent;border-radius:6px;cursor:pointer;}
 .tab-btn.active{background:#fff;box-shadow:0 1px 2px rgba(0,0,0,0.05);}
 .form-group{margin-bottom:14px;}
-.form-group label{font-size:12px;margin-bottom:4px;display:block;color:var(--gray-500);}
-.form-group input{width:100%;padding:10px;font-size:14px;border:1px solid var(--gray-200);border-radius:var(--radius-sm);}
-.status-bar{display:none;padding:10px;border-radius:var(--radius-sm);margin-bottom:16px;font-size:13px;}
-.status-success{background:var(--green-light);color:var(--green);}
-.status-error{background:var(--red-light);color:var(--red);}
-.drop-zone{border:2px dashed var(--gray-400);padding:30px 16px;text-align:center;cursor:pointer;border-radius:var(--radius-md);margin-bottom:16px;font-size:13px;}
-.suggestions{background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius-sm);max-height:200px;overflow-y:auto;margin-top:5px;position:absolute;z-index:100;width:calc(100% - 32px);}
-.sug-item{padding:8px 12px;cursor:pointer;border-bottom:1px solid var(--gray-100);font-size:13px;}
-.sug-item:hover{background:var(--gray-50);}
+.form-group label{font-size:12px;margin-bottom:4px;display:block;color:#6b7280;}
+.form-group input{width:100%;padding:10px;font-size:14px;border:1px solid #e5e7eb;border-radius:6px;}
+.status-bar{display:none;padding:10px;border-radius:6px;margin-bottom:16px;font-size:13px;}
+.status-success{background:#eafaf1;color:#1e8449;}
+.status-error{background:#fdedec;color:#C0392B;}
+.drop-zone{border:2px dashed #9ca3af;padding:30px 16px;text-align:center;cursor:pointer;border-radius:10px;margin-bottom:16px;font-size:13px;}
+.suggestions{background:#fff;border:1px solid #e5e7eb;border-radius:6px;max-height:200px;overflow-y:auto;margin-top:5px;position:absolute;z-index:100;width:calc(100% - 32px);}
+.sug-item{padding:8px 12px;cursor:pointer;border-bottom:1px solid #e5e7eb;font-size:13px;}
+.sug-item:hover{background:#f3f4f6;}
 </style>
 </head>
 <body>
@@ -83,7 +83,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <div class="role-btn" onclick="selectRole('lider')"><i class="ti ti-users"></i><span>Líder</span></div>
       <div class="role-btn" onclick="selectRole('motorista')"><i class="ti ti-steering-wheel"></i><span>Motorista</span></div>
     </div>
-    <div class="login-field"><label>E-mail / Usuário</label><input type="text" id="login-user" value="admin"></div>
+    <div class="login-field"><label>Usuário</label><input type="text" id="login-user" value="admin"></div>
     <div class="login-field"><label>Senha</label><input type="password" id="login-pass" value="Melissa@2016"></div>
     <button class="btn-login" onclick="doLogin()">Entrar</button>
     <button class="btn-login btn-secondary" onclick="showRegisterLider()" style="background:#6c757d; margin-top:8px">Cadastrar como Líder</button>
@@ -116,8 +116,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <div id="admin-solicitacoesColab" style="display:none" class="card"><h3>Solicitações de Embarque</h3><div id="solicitacoes-colab-list"></div></div>
       <div id="admin-lideres" style="display:none" class="card"><h3>Líderes Autorizados</h3><div id="lideres-list"></div></div>
       <div id="admin-upload" style="display:none" class="card">
-        <h3>Upload de Planilha</h3>
-        <div class="drop-zone" id="dropZone" onclick="document.getElementById('file-input').click()">📁 Arraste ou clique<br><small>Abas: PASSAGEIROS e LINHAS</small></div>
+        <h3>Upload de Planilha (Excel)</h3>
+        <div class="drop-zone" id="dropZone" onclick="document.getElementById('file-input').click()">📁 Clique para selecionar<br><small>Abas: PASSAGEIROS e LINHAS</small></div>
         <input type="file" id="file-input" accept=".xlsx,.xls" style="display:none" onchange="handleFile(this.files[0])">
         <div id="upload-status" class="status-bar" style="display:none"></div>
       </div>
@@ -131,7 +131,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <!-- Líder Panel -->
     <div id="lider-panel" style="display:none">
       <div class="tabs"><button class="tab-btn active" onclick="liderTab('colaboradores')">Colaboradores</button><button class="tab-btn" onclick="liderTab('solicitacoes')">Minhas Solicitações</button></div>
-      <div id="lider-colaboradores"><div class="search-wrap"><i class="ti ti-search"></i><input type="text" id="lider-search" placeholder="Buscar colaborador" oninput="renderColaboradores()"></div><div id="colaboradores-list"></div></div>
+      <div id="lider-colaboradores">
+        <div class="search-wrap"><i class="ti ti-search"></i><input type="text" id="lider-search" placeholder="Buscar colaborador" oninput="renderColaboradores()"></div>
+        <div id="colaboradores-list"></div>
+        <button class="btn btn-primary" style="margin-top:8px; width:100%" onclick="recarregarListaLider()">🔄 Recarregar Lista</button>
+      </div>
       <div id="lider-solicitacoes" style="display:none" class="card"><h3>Solicitações Enviadas</h3><div id="lider-solicitacoes-list"></div></div>
     </div>
     
@@ -157,10 +161,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <div class="form-group" style="position:relative">
         <label>Linha Desejada</label>
         <input type="text" id="sol-busca-linha" placeholder="Digite para buscar...">
-        <div id="sol-linha-suggestions" class="suggestions"></div>
+        <div id="sol-linha-suggestions" class="suggestions" style="display:none"></div>
       </div>
-      <div id="sol-linha-selecionada" style="display:none; margin-top:8px; padding:8px; background:var(--green-light); border-radius:6px;"><i class="ti ti-circle-check"></i> <span id="sol-linha-nome"></span></div>
-      <div id="sol-msg" class="status-bar"></div>
+      <div id="sol-linha-selecionada" style="display:none; margin-top:8px; padding:8px; background:#eafaf1; border-radius:6px;"><i class="ti ti-circle-check"></i> <span id="sol-linha-nome"></span></div>
+      <div id="sol-msg" class="status-bar" style="display:none"></div>
     </div>
     <div class="modal-footer"><button class="btn" onclick="closeSolicitarModal()">Cancelar</button><button class="btn btn-primary" onclick="enviarSolicitacaoEmbarque()">Enviar</button></div>
   </div>
@@ -174,17 +178,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <div class="form-group"><label>E-mail (@mercadolivre.com)</label><input type="email" id="reg-email" placeholder="seuemail@mercadolivre.com"></div>
       <div class="form-group"><label>Senha</label><input type="password" id="reg-senha"></div>
       <div class="form-group"><label>Confirmar</label><input type="password" id="reg-confirm"></div>
-      <div id="reg-msg" class="status-bar"></div>
+      <div id="reg-msg" class="status-bar" style="display:none"></div>
     </div>
     <div class="modal-footer"><button class="btn" onclick="closeRegisterModal()">Cancelar</button><button class="btn btn-primary" onclick="solicitarCadastroLider()">Solicitar</button></div>
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script>
-// ==================== RESET E INICIALIZAÇÃO ====================
+// ==================== RESET E INICIALIZAÇÃO COM DADOS DE EXEMPLO ====================
 function resetSystem() {
-  if(confirm('ATENÇÃO: Isso apagará todos os dados. Deseja continuar?')) {
+  if(confirm('Apagar todos os dados? Recomendado se a lista não aparecer.')) {
     localStorage.clear();
     location.reload();
   }
@@ -202,7 +205,17 @@ function initData() {
   if(!localStorage.getItem('mimo_lider_requests')) localStorage.setItem('mimo_lider_requests', JSON.stringify([]));
   if(!localStorage.getItem('mimo_solicitacoes_embarque')) localStorage.setItem('mimo_solicitacoes_embarque', JSON.stringify([]));
   if(!localStorage.getItem('mimo_linhas')) localStorage.setItem('mimo_linhas', JSON.stringify([]));
-  if(!localStorage.getItem('mimo_colaboradores')) localStorage.setItem('mimo_colaboradores', JSON.stringify([]));
+  let colaboradores = JSON.parse(localStorage.getItem('mimo_colaboradores'));
+  if(!colaboradores || colaboradores.length === 0) {
+    // DADOS DE EXEMPLO PARA TESTE IMEDIATO (para aparecer no celular)
+    colaboradores = [
+      { id: 1, nome: 'Carlos Silva', linha: 'Linha 101 - Centro', telefone: '(11) 99999-1111', autorizado: true, endereco: 'Rua A, 123', horario: '07:30' },
+      { id: 2, nome: 'Maria Souza', linha: 'Linha 102 - Norte', telefone: '(11) 99999-2222', autorizado: false, endereco: 'Av. B, 456', horario: '08:00' },
+      { id: 3, nome: 'João Pereira', linha: 'Linha 103 - Sul', telefone: '(11) 99999-3333', autorizado: true, endereco: 'Praça C, 789', horario: '09:15' }
+    ];
+    localStorage.setItem('mimo_colaboradores', JSON.stringify(colaboradores));
+    localStorage.setItem('mimo_linhas', JSON.stringify(['Linha 101 - Centro', 'Linha 102 - Norte', 'Linha 103 - Sul']));
+  }
   let usersNow = JSON.parse(localStorage.getItem('mimo_users'));
   if(!usersNow['lider@mercadolivre.com']) {
     usersNow['lider@mercadolivre.com'] = { password: 'lider123', role: 'lider', nome: 'Líder Exemplo', status: 'aprovado' };
@@ -219,6 +232,7 @@ let solicitacoesEmbarque = JSON.parse(localStorage.getItem('mimo_solicitacoes_em
 let currentUser = null;
 let currentSolicitacaoColab = null;
 
+// ==================== FUNÇÕES GERAIS ====================
 function selectRole(role) {
   document.querySelectorAll('.role-btn').forEach(btn => btn.classList.remove('selected'));
   event.currentTarget.classList.add('selected');
@@ -228,7 +242,7 @@ function selectRole(role) {
 }
 
 function showRegisterLider() { document.getElementById('register-lider-modal').classList.add('open'); }
-function closeRegisterModal() { document.getElementById('register-lider-modal').classList.remove('open'); document.getElementById('reg-email').value = ''; document.getElementById('reg-senha').value = ''; document.getElementById('reg-confirm').value = ''; }
+function closeRegisterModal() { document.getElementById('register-lider-modal').classList.remove('open'); }
 
 function solicitarCadastroLider() {
   let email = document.getElementById('reg-email').value.trim().toLowerCase();
@@ -279,6 +293,8 @@ function setupDashboard() {
   if (role === 'motorista') { buscarColaboradorMotorista(); }
 }
 
+function recarregarListaLider() { renderColaboradores(); alert('Lista recarregada!'); }
+
 // ==================== ADMIN ====================
 function adminTab(tab) {
   document.getElementById('admin-solicitacoesLider').style.display = tab === 'solicitacoesLider' ? 'block' : 'none';
@@ -288,8 +304,6 @@ function adminTab(tab) {
   document.getElementById('admin-colaboradoresList').style.display = tab === 'colaboradoresList' ? 'block' : 'none';
   document.querySelectorAll('#admin-panel .tab-btn').forEach(btn => btn.classList.remove('active'));
   event.currentTarget.classList.add('active');
-  if (tab === 'solicitacoesColab') renderSolicitacoesEmbarque();
-  if (tab === 'colaboradoresList') renderAdminColaboradores();
 }
 
 function renderLiderRequests() {
@@ -368,20 +382,19 @@ function reprovarEmbarque(id) {
   }
 }
 
-// ==================== UPLOAD (CORRIGIDO PARA MOBILE) ====================
+// ==================== UPLOAD COM FALLBACK E LOG ====================
 function handleFile(file) {
   if (!file) return;
   let statusDiv = document.getElementById('upload-status');
   statusDiv.className = 'status-bar status-success';
   statusDiv.style.display = 'block';
-  statusDiv.innerHTML = '📄 Lendo arquivo...';
+  statusDiv.innerHTML = '📄 Lendo arquivo... Aguarde.';
   
   let reader = new FileReader();
   reader.onload = function(e) {
     try {
       let data = new Uint8Array(e.target.result);
       let workbook = XLSX.read(data, { type: 'array' });
-      
       let passageirosSheet = null, linhasSheet = null;
       for (let name of workbook.SheetNames) {
         let upper = name.toUpperCase();
@@ -389,67 +402,47 @@ function handleFile(file) {
         if (upper === 'LINHAS') linhasSheet = workbook.Sheets[name];
       }
       if (!passageirosSheet) passageirosSheet = workbook.Sheets[workbook.SheetNames[0]];
-      
       let rows = XLSX.utils.sheet_to_json(passageirosSheet, { defval: '', raw: false });
       if (!rows.length) throw new Error('Nenhum dado encontrado.');
       
-      // Mostrar cabeçalhos para debug
       let headers = Object.keys(rows[0]);
-      console.log('Cabeçalhos:', headers);
       alert('Cabeçalhos detectados:\n' + headers.join(', '));
       
-      function getField(row, variations) {
-        for (let v of variations) {
-          if (row[v] && row[v].toString().trim()) return row[v].toString().trim();
-        }
-        // Busca case-insensitive
-        for (let key of Object.keys(row)) {
-          for (let v of variations) {
-            if (key.toLowerCase() === v.toLowerCase() && row[key] && row[key].toString().trim()) {
-              return row[key].toString().trim();
-            }
-          }
-        }
+      function getField(row, vars) {
+        for (let v of vars) if (row[v] && row[v].toString().trim()) return row[v].toString().trim();
+        for (let key of Object.keys(row))
+          for (let v of vars) if (key.toLowerCase() === v.toLowerCase() && row[key] && row[key].toString().trim()) return row[key].toString().trim();
         return '';
       }
-      
-      let novos = [], linhasExtraidas = new Set();
+      let novos = [], linhasExtra = new Set();
       for (let row of rows) {
         let nome = getField(row, ['Nome', 'NOME', 'nome']);
         if (!nome) continue;
         let linha = getField(row, ['Linha Vinculada', 'LINHA VINCULADA', 'linha vinculada', 'Linha', 'LINHA', 'linha']);
+        let telefone = getField(row, ['Celular', 'CELULAR', 'celular', 'Telefone']);
         let turno = getField(row, ['Turno', 'TURNO', 'turno']);
         let email = getField(row, ['E-mail', 'EMAIL', 'email']);
-        let celular = getField(row, ['Celular', 'CELULAR', 'celular', 'Telefone']);
         let cpf = getField(row, ['Cpf', 'CPF', 'cpf']);
         let hora = getField(row, ['Hora Parada', 'HORA PARADA', 'hora parada']);
         let endereco = getField(row, ['Ponto de Referencia', 'PONTO DE REFERENCIA', 'ponto de referencia']);
         let distancia = getField(row, ['Dist. (m)', 'DIST. (M)', 'dist']);
-        
-        if (linha) linhasExtraidas.add(linha);
-        novos.push({
-          id: Date.now() + Math.random(),
-          nome, turno, email, telefone: celular, cpf, linha, horario: hora, endereco, distancia,
-          autorizado: false
-        });
+        if (linha) linhasExtra.add(linha);
+        novos.push({ id: Date.now() + Math.random(), nome, turno, email, telefone, cpf, linha, horario: hora, endereco, distancia, autorizado: false });
       }
-      if (!novos.length) throw new Error('Nenhum registro com nome.');
-      
+      if (!novos.length) throw new Error('Nenhum nome encontrado.');
       let novasLinhas = [];
       if (linhasSheet) {
-        let linhasRows = XLSX.utils.sheet_to_json(linhasSheet, { header: 1 });
-        for (let row of linhasRows) if (row[0] && row[0].toString().trim()) novasLinhas.push(row[0].toString().trim());
+        let lrows = XLSX.utils.sheet_to_json(linhasSheet, { header: 1 });
+        for (let r of lrows) if (r[0] && r[0].toString().trim()) novasLinhas.push(r[0].toString().trim());
       }
-      if (!novasLinhas.length && linhasExtraidas.size) novasLinhas = Array.from(linhasExtraidas);
-      if (!novasLinhas.length) novasLinhas = ['Linha 101 - Centro', 'Linha 102 - Norte'];
+      if (!novasLinhas.length && linhasExtra.size) novasLinhas = Array.from(linhasExtra);
+      if (!novasLinhas.length) novasLinhas = ['Linha 101 - Centro', 'Linha 102 - Norte', 'Linha 103 - Sul'];
       
       colaboradores = novos;
       linhasDisponiveis = novasLinhas;
       localStorage.setItem('mimo_colaboradores', JSON.stringify(colaboradores));
       localStorage.setItem('mimo_linhas', JSON.stringify(linhasDisponiveis));
-      
-      statusDiv.innerHTML = `✅ ${colaboradores.length} colaboradores e ${linhasDisponiveis.length} linhas importados!`;
-      // Forçar atualização das telas
+      statusDiv.innerHTML = `✅ ${colaboradores.length} colaboradores importados!`;
       renderAdminColaboradores();
       if (currentUser?.role === 'lider') renderColaboradores();
       if (currentUser?.role === 'motorista') buscarColaboradorMotorista();
@@ -459,6 +452,7 @@ function handleFile(file) {
       statusDiv.innerHTML = '❌ Erro: ' + err.message;
     }
   };
+  reader.onerror = () => { statusDiv.innerHTML = '❌ Erro de leitura. Tente outro arquivo.'; };
   reader.readAsArrayBuffer(file);
 }
 
@@ -484,7 +478,7 @@ function renderColaboradores() {
   let search = document.getElementById('lider-search')?.value.toLowerCase() || '';
   let filtered = colaboradores.filter(c => c.nome.toLowerCase().includes(search));
   let html = filtered.map(c => `<div class="pass-card"><div class="avatar">${c.nome.charAt(0)}</div><div><strong>${c.nome}</strong><br><small>Linha: ${c.linha || '—'}</small><br><small>Status: ${c.autorizado ? '✅ Autorizado' : '⏳ Pendente'}</small></div><button class="btn btn-sm" onclick="abrirModalSolicitar(${c.id})">Solicitar</button></div>`).join('');
-  document.getElementById('colaboradores-list').innerHTML = html || '<p>Nenhum colaborador. Faça upload da planilha no admin.</p>';
+  document.getElementById('colaboradores-list').innerHTML = html || '<p>Nenhum colaborador. Use o upload no Admin.</p>';
 }
 function abrirModalSolicitar(id) {
   let colab = colaboradores.find(c => c.id === id);
