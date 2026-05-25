@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes"/>
-<title>Viação MIMO — Gestão de Embarque (Mobile)</title>
+<title>Viação MIMO — Gestão de Embarque</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css"/>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
@@ -135,6 +135,7 @@ body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-seri
         <div class="search-wrap"><i class="ti ti-search"></i><input type="text" id="lider-search" placeholder="Buscar colaborador" oninput="renderColaboradores()"></div>
         <div id="colaboradores-list"></div>
         <button class="btn btn-primary" style="margin-top:8px; width:100%" onclick="recarregarListaLider()">🔄 Recarregar Lista</button>
+        <div id="lider-status-msg" class="status-bar" style="display:none; margin-top:8px;"></div>
       </div>
       <div id="lider-solicitacoes" style="display:none" class="card"><h3>Solicitações Enviadas</h3><div id="lider-solicitacoes-list"></div></div>
     </div>
@@ -185,9 +186,9 @@ body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-seri
 </div>
 
 <script>
-// ==================== RESET E INICIALIZAÇÃO COM DADOS DE EXEMPLO ====================
+// ==================== RESET E INICIALIZAÇÃO (SEM DADOS DE EXEMPLO) ====================
 function resetSystem() {
-  if(confirm('Apagar todos os dados? Recomendado se a lista não aparecer.')) {
+  if(confirm('Apagar todos os dados e reiniciar? Isso limpará a lista atual.')) {
     localStorage.clear();
     location.reload();
   }
@@ -205,16 +206,9 @@ function initData() {
   if(!localStorage.getItem('mimo_lider_requests')) localStorage.setItem('mimo_lider_requests', JSON.stringify([]));
   if(!localStorage.getItem('mimo_solicitacoes_embarque')) localStorage.setItem('mimo_solicitacoes_embarque', JSON.stringify([]));
   if(!localStorage.getItem('mimo_linhas')) localStorage.setItem('mimo_linhas', JSON.stringify([]));
-  let colaboradores = JSON.parse(localStorage.getItem('mimo_colaboradores'));
-  if(!colaboradores || colaboradores.length === 0) {
-    // DADOS DE EXEMPLO PARA TESTE IMEDIATO (para aparecer no celular)
-    colaboradores = [
-      { id: 1, nome: 'Carlos Silva', linha: 'Linha 101 - Centro', telefone: '(11) 99999-1111', autorizado: true, endereco: 'Rua A, 123', horario: '07:30' },
-      { id: 2, nome: 'Maria Souza', linha: 'Linha 102 - Norte', telefone: '(11) 99999-2222', autorizado: false, endereco: 'Av. B, 456', horario: '08:00' },
-      { id: 3, nome: 'João Pereira', linha: 'Linha 103 - Sul', telefone: '(11) 99999-3333', autorizado: true, endereco: 'Praça C, 789', horario: '09:15' }
-    ];
-    localStorage.setItem('mimo_colaboradores', JSON.stringify(colaboradores));
-    localStorage.setItem('mimo_linhas', JSON.stringify(['Linha 101 - Centro', 'Linha 102 - Norte', 'Linha 103 - Sul']));
+  if(!localStorage.getItem('mimo_colaboradores')) {
+    // NÃO COLOCAR DADOS DE EXEMPLO. Inicia vazio para que o upload seja a única fonte.
+    localStorage.setItem('mimo_colaboradores', JSON.stringify([]));
   }
   let usersNow = JSON.parse(localStorage.getItem('mimo_users'));
   if(!usersNow['lider@mercadolivre.com']) {
@@ -288,12 +282,32 @@ function setupDashboard() {
   document.getElementById('admin-panel').style.display = role === 'admin' ? 'block' : 'none';
   document.getElementById('lider-panel').style.display = role === 'lider' ? 'block' : 'none';
   document.getElementById('motorista-panel').style.display = role === 'motorista' ? 'block' : 'none';
-  if (role === 'admin') { renderLiderRequests(); renderSolicitacoesEmbarque(); renderLideresAprovados(); renderAdminColaboradores(); }
-  if (role === 'lider') { renderColaboradores(); renderMinhasSolicitacoesEmbarque(); }
-  if (role === 'motorista') { buscarColaboradorMotorista(); }
+  if (role === 'admin') { 
+    renderLiderRequests(); 
+    renderSolicitacoesEmbarque(); 
+    renderLideresAprovados(); 
+    renderAdminColaboradores(); 
+  }
+  if (role === 'lider') { 
+    renderColaboradores(); 
+    renderMinhasSolicitacoesEmbarque(); 
+  }
+  if (role === 'motorista') { 
+    buscarColaboradorMotorista(); 
+  }
 }
 
-function recarregarListaLider() { renderColaboradores(); alert('Lista recarregada!'); }
+function recarregarListaLider() {
+  // Recarrega os dados do localStorage e atualiza a lista
+  colaboradores = JSON.parse(localStorage.getItem('mimo_colaboradores')) || [];
+  linhasDisponiveis = JSON.parse(localStorage.getItem('mimo_linhas')) || [];
+  renderColaboradores();
+  let msgDiv = document.getElementById('lider-status-msg');
+  msgDiv.className = 'status-bar status-success';
+  msgDiv.style.display = 'block';
+  msgDiv.innerHTML = `✅ Lista recarregada! ${colaboradores.length} colaboradores encontrados.`;
+  setTimeout(() => msgDiv.style.display = 'none', 3000);
+}
 
 // ==================== ADMIN ====================
 function adminTab(tab) {
@@ -382,7 +396,7 @@ function reprovarEmbarque(id) {
   }
 }
 
-// ==================== UPLOAD COM FALLBACK E LOG ====================
+// ==================== UPLOAD (SUBSTITUI COMPLETAMENTE OS DADOS) ====================
 function handleFile(file) {
   if (!file) return;
   let statusDiv = document.getElementById('upload-status');
@@ -427,22 +441,33 @@ function handleFile(file) {
         let endereco = getField(row, ['Ponto de Referencia', 'PONTO DE REFERENCIA', 'ponto de referencia']);
         let distancia = getField(row, ['Dist. (m)', 'DIST. (M)', 'dist']);
         if (linha) linhasExtra.add(linha);
-        novos.push({ id: Date.now() + Math.random(), nome, turno, email, telefone, cpf, linha, horario: hora, endereco, distancia, autorizado: false });
+        novos.push({ 
+          id: Date.now() + Math.random(), 
+          nome, turno, email, telefone, cpf, 
+          linha: linha || '', 
+          horario: hora || '', 
+          endereco: endereco || '', 
+          distancia: distancia || '', 
+          autorizado: false 
+        });
       }
       if (!novos.length) throw new Error('Nenhum nome encontrado.');
+      
       let novasLinhas = [];
       if (linhasSheet) {
         let lrows = XLSX.utils.sheet_to_json(linhasSheet, { header: 1 });
         for (let r of lrows) if (r[0] && r[0].toString().trim()) novasLinhas.push(r[0].toString().trim());
       }
       if (!novasLinhas.length && linhasExtra.size) novasLinhas = Array.from(linhasExtra);
-      if (!novasLinhas.length) novasLinhas = ['Linha 101 - Centro', 'Linha 102 - Norte', 'Linha 103 - Sul'];
+      if (!novasLinhas.length) novasLinhas = ['Linha não informada'];
       
+      // SUBSTITUI COMPLETAMENTE
       colaboradores = novos;
       linhasDisponiveis = novasLinhas;
       localStorage.setItem('mimo_colaboradores', JSON.stringify(colaboradores));
       localStorage.setItem('mimo_linhas', JSON.stringify(linhasDisponiveis));
-      statusDiv.innerHTML = `✅ ${colaboradores.length} colaboradores importados!`;
+      
+      statusDiv.innerHTML = `✅ ${colaboradores.length} colaboradores e ${linhasDisponiveis.length} linhas importados!`;
       renderAdminColaboradores();
       if (currentUser?.role === 'lider') renderColaboradores();
       if (currentUser?.role === 'motorista') buscarColaboradorMotorista();
@@ -460,7 +485,7 @@ function renderAdminColaboradores() {
   let search = document.getElementById('admin-colab-search')?.value.toLowerCase() || '';
   let filtered = colaboradores.filter(c => c.nome.toLowerCase().includes(search));
   let html = filtered.map(c => `<div class="pass-card"><div class="avatar">${c.nome.charAt(0)}</div><div><strong>${c.nome}</strong><br>Tel: ${c.telefone || '—'}<br>Linha: ${c.linha || '—'}</div><button class="btn btn-sm" onclick="toggleAutorizacao(${c.id})">${c.autorizado ? 'Desautorizar' : 'Autorizar'}</button></div>`).join('');
-  document.getElementById('admin-colaboradores-container').innerHTML = html || '<p>Nenhum colaborador.</p>';
+  document.getElementById('admin-colaboradores-container').innerHTML = html || '<p>Nenhum colaborador. Faça upload da planilha.</p>';
 }
 function toggleAutorizacao(id) {
   let colab = colaboradores.find(c => c.id === id);
